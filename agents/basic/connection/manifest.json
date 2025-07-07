@@ -1,0 +1,97 @@
+{
+  "id": "basic/connection",
+  "version": "1.2.3",
+  "description": "Applies various image filters with real-time preview and adjustable parameters",
+
+  "node": {
+    "id": "system-connection",
+    "displayName": "Connection",
+    "icon": "filter",
+    "color": "#4A90E2",
+    "backgroundColor": "#F5F7FA",
+    "borderColor": "#E1E8ED",
+
+    "properties": [
+      {
+        "id": "fromStationId",
+        "type": "hidden",
+        "name": "From Station Id",
+        "description": "The unique identifier for the starting station in the connection.",
+        "defaultValue": ""
+      },
+      {
+        "id": "toStationId",
+        "type": "hidden",
+        "name": "To Station Id",
+        "description": "The unique identifier for the destination station in the connection.",
+        "defaultValue": ""
+      },
+      {
+        "id": "fromId",
+        "type": "hidden",
+        "name": "From Id",
+        "description": "The identifier for the node from which the connection originates.",
+        "defaultValue": ""
+      },
+      {
+        "id": "toId",
+        "type": "hidden",
+        "name": "To Id",
+        "description": "The identifier for the node to which the connection leads.",
+        "defaultValue": ""
+      },
+      {
+        "id": "startLabel",
+        "type": "text",
+        "name": "Start Label",
+        "description": "A label that describes the starting point of the connection.",
+        "defaultValue": ""
+      },
+      {
+        "id": "centerLabel",
+        "type": "text",
+        "name": "Center Label",
+        "description": "A label that represents the connection itself, typically displayed in the center.",
+        "defaultValue": ""
+      },
+      {
+        "id": "endLabel",
+        "type": "text",
+        "name": "End Label",
+        "description": "A label that describes the endpoint of the connection.",
+        "defaultValue": ""
+      },
+      {
+        "id": "agentType",
+        "type": "hidden",
+        "name": "Agent Type",
+        "description": "The type of agent responsible for managing the connection, which may define its behavior.",
+        "defaultValue": ""
+      },
+      {
+        "id": "color",
+        "type": "color",
+        "name": "Line Color",
+        "description": "The color of the line representing the connection, used for visual distinction.",
+        "defaultValue": "orange"
+      }
+    ],
+
+    "metadata": {
+      "nodeVersion": "2.1.0",
+      "apiVersion": "1.0",
+      "created": "2024-01-15T10:30:00Z",
+      "updated": "2024-03-20T14:45:00Z",
+      "deprecated": false,
+      "experimental": false,
+      "stability": "stable"
+    }
+
+  },
+  "files": {
+    "main": "index.js",
+    "icon": "assets/icon.svg",
+    "documentation": "README.md"
+  }
+
+}

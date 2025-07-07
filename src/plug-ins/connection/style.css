@@ -1,0 +1,43 @@
+/* Temp Connection Line */
+.ghost-line {
+  stroke: var(--orange);
+  stroke-width: 4;
+  fill: none;
+  stroke-dasharray: 5, 5;
+  pointer-events: none;
+}
+
+/* Connection Path */
+.connection-path {
+  stroke: var(--green);
+  stroke-width: 6;
+  fill: none;
+  stroke-linecap: round;
+}
+
+
+
+/* Label */
+.connection-label {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+
+  fill: var(--text);
+
+  dominant-baseline: middle;
+
+  paint-order: stroke fill;
+
+  stroke: var(--background);
+  stroke-width: 2;
+  stroke-linejoin: round;
+
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  stroke-width: 3;
+
+}
+.connection-label.connection-label-middle {
+  text-anchor: middle;
+}

@@ -1,0 +1,31 @@
+{
+  "name": "peepee",
+  "type": "module",
+  "version": "1.0.26",
+  "description": "Visual Programming Language Where You Connect Ports Of One EventEmitter to Ports Of Another EventEmitter",
+  "main": "index.js",
+  "scripts": {
+    "app": "nw .",
+    "web": "http-server -p 8084 -c-1 .",
+    "save": "git add .; git commit -m 'Updated Release'; npm version patch; npm publish; git push --follow-tags;"
+  },
+  "keywords": [
+    "visual-programming-language",
+    "graph-editor",
+    "flow-based-programming",
+    "dataflow-programming",
+    "visual-programming",
+    "low-code",
+    "vpl"
+  ],
+  "author": "@catpea",
+  "license": "GPL",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/catpea/peepee.git"
+  },
+  "bugs": {
+    "url": "https://github.com/catpea/peepee/issues"
+  },
+  "homepage": "https://github.com/catpea/peepee#readme"
+}

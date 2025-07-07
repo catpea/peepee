@@ -1,0 +1,211 @@
+:root {
+  color-scheme: dark;
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Verdana, sans-serif;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+/* TOOL MOdes*/
+svg[data-tool="select-tool"] {
+  cursor: default;
+}
+svg[data-tool="interact-tool"] {
+  cursor: pointer;
+}
+
+svg[data-tool="pan-zoom-tool"] {
+  cursor: all-scroll;
+}
+
+svg[data-tool="connect-tool"] {
+  cursor: crosshair;
+}
+svg[data-tool="disconnect-tool"] {
+  cursor: crosshair;
+}
+
+svg[data-tool="delete-tool"] {
+  cursor: no-drop;
+}
+svg[data-tool="zoom-in-tool"] {
+  cursor: zoom-in;
+}
+svg[data-tool="zoom-out-tool"] {
+  cursor: zoom-out;
+}
+
+.ui-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.text-info {
+  color: var(--violet) !important;
+}
+
+/* .controls {
+  display: flex;
+  gap: 10px;
+}
+
+.info {
+  font-size: 12px;
+  color: var(--base02);
+  display: flex;
+  gap: 20px;
+} */
+
+.svg-container {
+  flex: 1;
+  border: 2px solid var(--base02);
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+svg:active {
+  cursor: grabbing;
+}
+
+.grid-line {
+  stroke: #333;
+  stroke-width: 0.5;
+}
+
+.grid-major {
+  stroke: #555;
+  stroke-width: 1;
+}
+
+.grid-label {
+  fill: #888;
+  font-size: 10px;
+  font-family: "Courier New", monospace;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.axis {
+  stroke: #777;
+  stroke-width: 2;
+}
+
+.origin {
+  fill: #ff6b6b;
+  stroke: #fff;
+  stroke-width: 1;
+}
+
+/* General Form Elements */
+input,
+select,
+textarea {
+  background: var(--base03);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px;
+  border-radius: 4px;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.snapped-top {
+  position: fixed;
+  top: 1rem;
+}
+.snapped-bottom {
+  position: fixed;
+  bottom: 1rem;
+}
+
+.snapped-start {
+  left: 1rem;
+}
+
+.snapped-center {
+  right: 1rem;
+  left: 1rem;
+}
+.snapped-end {
+  right: 1rem;
+}
+
+.rounded {
+  border-radius: 4px;
+}
+
+.shadow {
+  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Button */
+
+button.btn {
+  --my-btn-border-radius: 4px;
+  --my-btn-padding-x: 0.25rem;
+  --my-btn-padding-y: 0.5rem;
+  --my-btn-margin-x: 0.1rem;
+  --my-btn-margin-y: 0rem;
+}
+
+button.btn.btn-sm {
+  --my-btn-border-radius: 4px;
+  --my-btn-padding-x: 0.2rem;
+  --my-btn-padding-y: 0.3rem;
+  --my-btn-margin-x: 0.2rem;
+  --my-btn-margin-y: 0rem;
+}
+
+button.btn {
+  background: var(--base02);
+  border: 1px solid var(--border);
+  cursor: pointer;
+
+  font-family: inherit;
+  color: var(--text);
+  transition: background 0.2s;
+
+  border-radius: var(--my-btn-border-radius);
+  padding: var(--my-btn-padding-x) var(--my-btn-padding-y);
+  margin: var(--my-btn-margin-x) var(--my-btn-margin-y);
+}
+
+button:hover {
+  background: var(--base03);
+}
+
+button.btn.active {
+  border: 1px solid var(--base1);
+
+  color: var(--base03);
+  background: var(--base01);
+}
+
+/* Row */
+.row {
+  align-items: flex-center;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Column base */
+.col {
+  flex: 1;
+  min-width: 0; /* Prevents flex items from overflowing */
+}
