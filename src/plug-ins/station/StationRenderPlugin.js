@@ -1,11 +1,13 @@
-import { rid, ReactiveSignal as Signal, fromEvent, namedCombineLatest } from "../../core/Signal.js";
+import { Plugin } from 'plugin';
 
-export class StationRenderPlugin {
+export class StationRenderPlugin extends Plugin {
   app;
   stations;
   subscriptions;
 
   constructor() {
+    super();
+
     this.subscriptions = new Set();
     this.stations = new Map();
   }
@@ -28,10 +30,7 @@ export class StationRenderPlugin {
     this.subscriptions.clear();
   }
 
-  eventDispatch(...argv){
-    console.info('eventDispatch', ...argv);
-    this.app.emit(...argv);
-  }
+
 
   listenTo(source, name, fn){
 

@@ -1,4 +1,5 @@
-import { rid, ReactiveSignal as Signal, fromEvent, namedCombineLatest } from "../../core/Signal.js";
+import { Plugin } from 'plugin';
+
 import { PanZoomEngine } from "./PanZoomEngine.js";
 import { InteractionEvents } from './plug-ins/InteractionEvents.js';
 
@@ -12,12 +13,13 @@ import { GridBackgroundPlugin } from './plug-ins/GridBackgroundPlugin.js';
 import { PointerTrackingPlugin } from './plug-ins/PointerTrackingPlugin.js';
 
 
-export class WorkbenchPlugin {
+export class WorkbenchPlugin extends Plugin {
   app;
   stations;
   subscriptions;
 
   constructor() {
+    super();
     this.subscriptions = new Set();
     this.stations = new Map();
   }
@@ -75,10 +77,7 @@ export class WorkbenchPlugin {
     this.subscriptions.clear();
   }
 
-  eventDispatch(...argv){
-    console.info('eventDispatch', ...argv);
-    this.app.emit(...argv);
-  }
+
 
   ////////////////
 

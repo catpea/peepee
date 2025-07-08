@@ -30,7 +30,7 @@ export class PanZoomEngine {
 
     this.isActive = true;
     this.activatingToolName = 'panZoom';
-    this.app.selectedTool.subscribe(selectedToolName=>this.isActive=selectedToolName==this.activatingToolName);
+    //this.app.selectedTool.subscribe(selectedToolName=>this.isActive=selectedToolName==this.activatingToolName);
 
     this.isRunning = false;
 

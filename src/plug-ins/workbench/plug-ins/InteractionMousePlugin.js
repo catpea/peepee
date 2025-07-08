@@ -21,6 +21,8 @@ export class InteractionMousePlugin {
   }
 
   onMouseDown = (event) => {
+    if(event.target !== this.engine.svg) return;
+
     if(!this.engine.isActive) return;
 
     event.preventDefault();
@@ -30,6 +32,7 @@ export class InteractionMousePlugin {
   };
 
   onMouseMove = (event) => {
+
     if (this.isDragging) {
       const deltaX = event.clientX - this.lastX;
       const deltaY = event.clientY - this.lastY;

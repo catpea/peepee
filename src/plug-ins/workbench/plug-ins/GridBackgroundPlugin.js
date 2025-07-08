@@ -93,6 +93,9 @@ export class GridBackgroundPlugin {
     this.backgroundRect.setAttribute('fill', `url(#${this.config.patternId})`);
     this.backgroundRect.classList.add('grid-background-rect');
 
+    // grid rect must not be interactive, so tha the events can fall through to svg element.
+    this.backgroundRect.style.pointerEvents = 'none';
+
     // Insert as first child of SVG (behind everything)
     this.engine.svg.insertBefore(this.backgroundRect, this.engine.svg.firstChild);
   }

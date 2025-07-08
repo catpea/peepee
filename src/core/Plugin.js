@@ -1,7 +1,8 @@
 export class Plugin {
 
   eventDispatch(...argv){
-    // console.info('eventDispatch', ...argv);
+    console.info('eventDispatch:', this.constructor.name, ...argv,);
+    console.info('eventDispatch:', this.constructor.name, ...argv,);
     this.app.emit(...argv);
   }
 
@@ -12,7 +13,6 @@ export class Plugin {
   }
 
   linkStyleSheet(url) {
-
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = url;
@@ -20,7 +20,6 @@ export class Plugin {
   }
 
   loadStyleSheet(url) {
-
     fetch(url)
       .then(response => {
         if (!response.ok) throw new Error(`Failed to load CSS: ${response.statusText}`);

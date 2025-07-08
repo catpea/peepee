@@ -1,8 +1,11 @@
-export class StationDeletePlugin {
+import { Plugin } from 'plugin';
+
+export class StationDeletePlugin extends Plugin {
   app;
   subscriptions;
 
   constructor() {
+    super();
     this.subscriptions = new Set();
   }
 
@@ -26,10 +29,7 @@ export class StationDeletePlugin {
     this.subscriptions.clear();
   }
 
-  eventDispatch(...argv){
-    console.info('eventDispatch', ...argv);
-    this.app.emit(...argv);
-  }
+
 
   stationRemove(id) {
     console.log('stationRemove',id, this.stationInstances.has(id));

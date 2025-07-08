@@ -1,4 +1,5 @@
-import { Plugin } from "../../core/Plugin.js";
+import { Plugin } from 'plugin';
+
 import { take } from "../../core/Utils.js";
 import { ReactiveSignal as Signal } from "../../core/Signal.js";
 

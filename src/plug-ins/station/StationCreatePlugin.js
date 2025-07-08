@@ -1,10 +1,13 @@
+import { Plugin } from 'plugin';
+
 import { Station } from './lib/Station.js';
 
-export class StationCreatePlugin {
+export class StationCreatePlugin extends Plugin {
   app;
   subscriptions;
 
   constructor() {
+    super();
     this.subscriptions = new Set();
   }
 
@@ -27,9 +30,7 @@ export class StationCreatePlugin {
     this.subscriptions.clear();
   }
 
-  eventDispatch(...argv){
-    this.app.emit(...argv);
-  }
+
 
   async stationAddRequest(raw) {
     const station = new Station(raw);

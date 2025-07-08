@@ -1,4 +1,5 @@
-import { Plugin } from "../../core/Plugin.js";
+import { Plugin } from 'plugin';
+
 import { take } from "../../core/Utils.js";
 import { ReactiveSignal as Signal } from "../../core/Signal.js";
 // import { PersistentMap } from "./PersistentMap.js";
@@ -91,10 +92,7 @@ export class PalettePlugin extends Plugin {
     this.subscriptions.clear();
   }
 
-  eventDispatch(...argv) {
-    console.info("eventDispatch", ...argv);
-    this.app.emit(...argv);
-  }
+
 
   renderAgents(){
 

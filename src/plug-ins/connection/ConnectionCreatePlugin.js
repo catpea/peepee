@@ -1,4 +1,5 @@
-import { Plugin } from "../../core/Plugin.js";
+import { Plugin } from 'plugin';
+
 import { Connection } from './lib/Connection.js';
 
 export class ConnectionCreatePlugin extends Plugin {

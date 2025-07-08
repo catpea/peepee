@@ -10,7 +10,7 @@ import { EventEmitter } from 'events';
  * - Commit: Persist captured events to the event store
  * - Snapshot: Create point-in-time state representation
  */
-class CaptureAndProject extends EventEmitter {
+export class CaptureAndProject extends EventEmitter {
   constructor() {
     super();
     this.eventStore = new Map(); // eventName -> captured events

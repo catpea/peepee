@@ -1,8 +1,11 @@
-export class ConnectionDeletePlugin {
+import { Plugin } from 'plugin';
+
+export class ConnectionDeletePlugin extends Plugin {
   app;
   subscriptions;
 
   constructor() {
+    super();
     this.subscriptions = new Set();
   }
 
@@ -43,10 +46,7 @@ export class ConnectionDeletePlugin {
     this.subscriptions.clear();
   }
 
-  eventDispatch(...argv){
-    console.info('eventDispatch', ...argv);
-    this.app.emit(...argv);
-  }
+
 
   connectionRemove(id) {
     console.log('connectionRemove', id, this.connectionInstances.has(id));

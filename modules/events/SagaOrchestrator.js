@@ -13,7 +13,7 @@ import { EventEmitter } from 'events';
  * - Saga Definition: Template defining saga steps and dependencies
  * - Saga State: Current progress and data of a saga instance
  */
-class SagaOrchestrator extends EventEmitter {
+export class SagaOrchestrator extends EventEmitter {
   constructor() {
     super();
     this.sagaDefinitions = new Map(); // sagaType -> saga definition
