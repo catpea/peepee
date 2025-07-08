@@ -619,7 +619,7 @@ const emitter = new EventSourcing({
 
 // Listen to events
 emitter.on('user.created', (data, event) => {
-  console.log('User created:', data.name, 'at', event.timestamp);
+  //console.log('User created:', data.name, 'at', event.timestamp);
 });
 
 // Emit events with metadata

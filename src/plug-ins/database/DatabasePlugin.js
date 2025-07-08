@@ -1,7 +1,5 @@
 import { Plugin } from 'plugin';
 import { EventAggregator } from 'events';
-
-import { rid, ReactiveSignal as Signal, namedCombineLatest, StreamEmitter } from "../../core/Signal.js";
 import { PersistentMap } from './PersistentMap.js';
 
 export class DatabasePlugin extends Plugin {
@@ -30,8 +28,6 @@ export class DatabasePlugin extends Plugin {
     this.subscriptions.clear();
   }
 
-
-
   startRestore(){
 
     //NOTICE: station gets {id, type} | metadata loads based on type | propertyKeys become available | recordStorage can now be pulled by key
@@ -43,17 +39,14 @@ export class DatabasePlugin extends Plugin {
     this.app.on('recordUpdated', data => this.records.set(data.id, data.serialize()));
     this.app.on('recordRemoved', id => this.records.delete(id));
 
-    const restoreStationOrchestrator = async station => {
-      if(!this.records.ready) await records.once('ready');
-      if(!records.has(station.id)) records.set(station.id, {}); // the record was not in database, set a blank object and bail
-      return true; // record is now present.
-    };
-
-
-    // stations must contain id that creates relations with all station data, and type, where we get our property names from
-    // this.pishposhStations = new PersistentMap(null, {prefix: 'pishposh-stations', onRestored:db=>db.forEach((v,k)=>this.app.emit('stationRestore', v))});
-    // this.pishposhStations = new PersistentMap(null, {prefix: 'pishposh-stations', onRestored:db=>db.forEach((v,k)=>this.app.emit('stationRestore', v))});
-    this.stations = new PersistentMap(null, {prefix: 'pishposh-stations', onRestored:db=>db.forEach((v,k)=>this.app.deferredEmit('stationRestore', v, restoreStationOrchestrator, 1000, (eventName, eventData, ttl, error) => console.error(`Failed to emit ${eventName} within ${ttl}ms`, error)) )});
+    this.stations = new PersistentMap(null, {prefix: 'pishposh-stations', onRestored: async stations=>{
+      for(const [id, station] of stations){
+        //console.log('station', station)
+        if(!this.records.ready) await records.once('ready');
+        if(!records.has(id)) records.set(id, {});
+        this.app.emit('stationRestore', station);
+      }
+    }});
 
     this.app.on('stationAdded', data => this.stations.set(data.id, data.serialize()));
     this.app.on('stationUpdated', data => this.stations.set(data.id, data.serialize()));
@@ -62,61 +55,7 @@ export class DatabasePlugin extends Plugin {
     this.app.on('stationAdded', data => records.set(data.id, {}));
     this.app.on('stationRemoved', id => records.delete(id));
 
-    // What you see here is Applied Reactive Emitter Programming. Function being used is called deferredEmit
-    // deferredEmit is part of the local EventEmitter system
-    // NOTE: a connection cannot be restored until the nodes it connects are loaded!
-    // NOTE: fromId, toId are just from the connection data in the Map
-    // const restoreConnectionOrchestrator = async ({id,  fromPortId,   toPortId}) => {
-
-    //   console.log('ZZZ', {fromId: fromPortId, toId: toPortId})
-
-    //   if(!this.records.ready) await records.once('ready');
-    //   if(!records.has(id)) records.set(id, {}); // the record was not in database, set a blank object and bail
-
-    //   const expectData = new Map();
-    //   expectData.set(fromPortId, this.portInstances.has(fromPortId));
-    //   expectData.set(toPortId, this.portInstances.has(toPortId));
-
-    //   const test = () => {
-    //     for (const value of expectData.values()) {
-    //       if (value !== true) return false; // exit early, data was not there.
-    //     }
-    //     return true;
-    //   };
-
-    //   if(test()) return true; // sync test, best case scenario
-    //   const emitter = new StreamEmitter();
-
-    //   let unsubscribe = this.app.on('portAdded', ({id})=>{
-    //     if(expectData.has(id)){
-    //       expectData.set(id, true);
-    //       //retest
-    //       if(test()) emitter.emit("output", 'connectionRestore'); // SENDING EVENT NAME this means we got what we need
-    //     }
-    //   });
-    //   emitter.subscriptions.add(unsubscribe); // .terminate will take care of this
-    //   return emitter; //  wait until either ttl or emitter emits output, true... then .terminate() emitter;
-    // };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // const restoreConnection1 = (connection, id) => this.app.deferredEmit('an', v, restoreConnectionOrchestrator, 1000, (eventName, eventData, ttl, error) => console.error(`Failed to emit ${eventName} within ${ttl}ms`, error))
-
-
-
     const aggregator = new EventAggregator();
-    // Single reusable definition for all connections
     aggregator.define('connectionReady', {
       events: [
         {
@@ -130,32 +69,16 @@ export class DatabasePlugin extends Plugin {
           alias: 'toPort'
         }
       ],
-      onComplete: (data) => {
-        // console.log('onCompleted', data)
-        this.app.emit('connectionRestore', data.initialData)
-        // aggregator.emit('connectionReady', {
-        //   connectionId: data.correlationValue,
-        //   fromPortId: data.initialData.fromPortId,
-        //   toPortId: data.initialData.toPortId,
-        //   fromPort: data.capturedEvents.fromPort.eventData,
-        //   toPort: data.capturedEvents.toPort.eventData
-        // });
-      }
+      onComplete: (data) => this.app.emit('connectionRestore', data.initialData)
     });
 
+    const restoreConnection = (connection) =>  aggregator.start('connectionReady', connection.id, connection);
+    this.app.on('portAdded', port => aggregator.emit('portAdded', port)); // drive data into the aggreaagator
 
-
-    const restoreConnection = (connection) => {
-      aggregator.start('connectionReady', connection.id, connection);
-    } // restoreConnection
-
-    // drive data into the aggreaagator -->
-    this.app.on('portAdded', port => {
-      aggregator.emit('portAdded', port);
-      console.log('getActiveAggregations', aggregator.getActiveAggregations());
+    this.connections = new PersistentMap(null, {
+      prefix: 'pishposh-connections',
+      onRestored: db => db.forEach(restoreConnection)
     });
-
-    this.connections = new PersistentMap(null, {prefix: 'pishposh-connections', onRestored:db=>db.forEach((v,k)=>restoreConnection(v,k))});
 
     this.app.on('connectionAdded',   data => this.connections.set(data.id, data.serialize()));
     this.app.on('connectionUpdated', data => this.connections.set(data.id, data.serialize()));

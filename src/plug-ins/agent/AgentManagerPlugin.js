@@ -43,7 +43,7 @@ export class AgentManagerPlugin extends Plugin {
 
   }
   async instantiateConnectionAgent(connection) {
-    console.warn('instantiateConnectionAgent', connection);
+    // console.warn('instantiateConnectionAgent', connection);
 
     if(connection.fromId) connection.fromEmitter =  this.agentInstances.get(connection.fromId)
     if(connection.toId) connection.toEmitter =  this.agentInstances.get(connection.toId)
@@ -59,7 +59,7 @@ export class AgentManagerPlugin extends Plugin {
   }
 
   async instantiateAgent(data) {
-    console.log('Instantiate Agent', data.agentType);
+    //console.log('Instantiate Agent', data.agentType);
 
    let manifest = this.agentManifests.has(data.agentType)? this.agentManifests.get(data.agentType):null;
     if(!manifest){

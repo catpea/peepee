@@ -32,7 +32,7 @@ export class StationDeletePlugin extends Plugin {
 
 
   stationRemove(id) {
-    console.log('stationRemove',id, this.stationInstances.has(id));
+    //console.log('stationRemove',id, this.stationInstances.has(id));
     if (!id) return console.warn("Attempted to remove a station without an id.");
     if (!this.stationInstances.has(id)) return console.warn(`No station found with id: ${id}`);
     this.stationInstances.delete(id);

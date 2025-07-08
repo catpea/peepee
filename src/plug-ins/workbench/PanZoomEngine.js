@@ -335,12 +335,12 @@ export class PanZoomEngine {
 // Usage example:
   handleSVGClick(event) {
   const actualTarget = getExplicitOriginalTarget(event);
-  console.log('Clicked element:', actualTarget);
-  console.log('Element type:', actualTarget.tagName);
+  //console.log('Clicked element:', actualTarget);
+  //console.log('Element type:', actualTarget.tagName);
 
   // You can now work with the actual graphic element
   if (actualTarget.tagName === 'circle') {
-    console.log('Circle radius:', actualTarget.getAttribute('r'));
+    //console.log('Circle radius:', actualTarget.getAttribute('r'));
   }
 }
 

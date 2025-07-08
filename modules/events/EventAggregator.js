@@ -101,11 +101,11 @@ export class EventAggregator extends EventEmitter {
 
     const instanceId = `${aggregationId}-${correlationValue}-${Date.now()}`;
 
-    console.log(`Starting aggregation instance ${instanceId} with:`, {
-      aggregationId,
-      correlationValue,
-      initialData
-    });
+    // console.log(`Starting aggregation instance ${instanceId} with:`, {
+    //   aggregationId,
+    //   correlationValue,
+    //   initialData
+    // });
 
     // Clone the template for this instance
     const instance = {
@@ -176,23 +176,23 @@ export class EventAggregator extends EventEmitter {
     }
 
     // Check all active aggregations
-    console.dir(this.aggregations)
+    // console.dir(this.aggregations)
     for (const [instanceId, aggregation] of this.aggregations) {
       if (aggregation.state !== 'WAITING') continue;
 
-      console.log('FFFF X', aggregation )
+      //console.log('FFFF X', aggregation )
 
       // Check if this event matches any of the aggregation's requirements
       const matchingEventDef = aggregation.events.find(e => {
         const matches = e.eventType === eventDef.eventType && e.filter(eventData, aggregation.initialData);
         // Debug log
-        if (e.eventType === eventDef.eventType) {
-          console.log(`Checking event ${e.eventType} for instance ${instanceId}:`, {
-            eventData,
-            initialData: aggregation.initialData,
-            matches
-          });
-        }
+        // if (e.eventType === eventDef.eventType) {
+          // console.log(`Checking event ${e.eventType} for instance ${instanceId}:`, {
+          //   eventData,
+          //   initialData: aggregation.initialData,
+          //   matches
+          // });
+        // }
         return matches;
       });
 

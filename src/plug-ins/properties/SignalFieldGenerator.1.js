@@ -98,7 +98,7 @@ export class SignalFieldGenerator {
     }
 
     this.observeRemoval(fieldContainer, element, (removedNode) => {
-      console.log('The target node has been removed:', removedNode);
+      //console.log('The target node has been removed:', removedNode);
       unsubscribe();
     });
 

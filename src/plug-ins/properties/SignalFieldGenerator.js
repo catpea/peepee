@@ -451,7 +451,7 @@ export class PropertiesForm {
         activeRecord[propertyName] = value;
         // store the updated record in the database.
         this.database.records.set(this.device.id, activeRecord);
-        console.log(`activeRecord: Updated database record ${this.device.id}/${propertyName}`, value)
+        //console.log(`activeRecord: Updated database record ${this.device.id}/${propertyName}`, value)
       });
 
     }

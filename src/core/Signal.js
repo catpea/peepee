@@ -58,7 +58,7 @@ class SpicyEmitter extends EventEmitter {
 
 
     // Race between condition satisfaction and timeout
-    console.log('CCC ENTERING RACE', conditionEmitter, timeoutEmitter)
+    //console.log('CCC ENTERING RACE', conditionEmitter, timeoutEmitter)
 
 
     try {
@@ -66,7 +66,7 @@ class SpicyEmitter extends EventEmitter {
       // Use the new generic race method
       // const winner = await this.race(foo1, foo2);
       const winner = await this.race(conditionEmitter, timeoutEmitter);
-        console.log('CCC RACE WINNER', winner)
+        //console.log('CCC RACE WINNER', winner)
 
       if (winner === eventName) {
         // Condition met - emit the event
@@ -491,7 +491,7 @@ export function log(source, fn) {
   result.source = source;
 
   source.subscribe((value) => {
-    console.log(fn(value));
+    //console.log(fn(value));
     result.emitValue(value);
   });
 
@@ -530,7 +530,7 @@ export function fromEvent(source, eventName) {
 
   // Create a function to handle the event
   const eventHandler = (value) => {
-    console.log("eventName", value);
+    //console.log("eventName", value);
     result.emitValue(value);
   };
 

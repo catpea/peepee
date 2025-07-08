@@ -233,11 +233,11 @@ mySet.add([1, 2, 3]);
 
 // Listen to events
 mySet.on('add', (value) => {
-  console.log('New item added:', value);
+  //console.log('New item added:', value);
 });
 
 mySet.on('delete', (value) => {
-  console.log('Item deleted:', value);
+  //console.log('Item deleted:', value);
 });
 
 // Use it like a Set

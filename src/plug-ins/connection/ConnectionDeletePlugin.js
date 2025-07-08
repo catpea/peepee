@@ -49,7 +49,7 @@ export class ConnectionDeletePlugin extends Plugin {
 
 
   connectionRemove(id) {
-    console.log('connectionRemove', id, this.connectionInstances.has(id));
+    //console.log('connectionRemove', id, this.connectionInstances.has(id));
     if (!id) return console.warn("Attempted to remove a connection without an id.");
     if (!this.connectionInstances.has(id)) return console.warn(`No connection found with id: ${id}`);
     this.connectionInstances.delete(id);

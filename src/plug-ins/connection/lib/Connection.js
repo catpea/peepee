@@ -53,7 +53,7 @@ export class Connection {
   // reusable creator used by deserializer and constructor
   setup(options){
 
-    console.log('DDD', options)
+    //console.log('DDD', options)
 
     this.#signalStorage.id = new Signal(options.id??rid());
 

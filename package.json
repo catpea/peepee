@@ -1,7 +1,7 @@
 {
   "name": "peepee",
   "type": "module",
-  "version": "1.0.27",
+  "version": "1.2.0",
   "description": "Visual Programming Language Where You Connect Ports Of One EventEmitter to Ports Of Another EventEmitter",
   "main": "index.js",
   "scripts": {

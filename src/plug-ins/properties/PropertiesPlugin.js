@@ -64,7 +64,7 @@ export class PropertiesPlugin extends Plugin {
   }
 
   async showConnectionProperties(connection){
-    console.log('DDD connection.agentType', connection.agentType );
+    //console.log('DDD connection.agentType', connection.agentType );
 
     // Clear existing UI
     if(this.form) this.form.terminate();

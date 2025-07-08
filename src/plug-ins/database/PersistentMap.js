@@ -1,4 +1,4 @@
-import { EventEmitter } from "../../core/Signal.js";
+import { EventEmitter } from 'events';
 
 
 export class PersistentMap extends EventEmitter {

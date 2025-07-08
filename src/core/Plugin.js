@@ -1,8 +1,7 @@
 export class Plugin {
 
   eventDispatch(...argv){
-    console.info('eventDispatch:', this.constructor.name, ...argv,);
-    console.info('eventDispatch:', this.constructor.name, ...argv,);
+    // console.info('eventDispatch:', this.constructor.name, ...argv,);
     this.app.emit(...argv);
   }
 

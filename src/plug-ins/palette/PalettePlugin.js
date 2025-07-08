@@ -19,7 +19,7 @@ export class PalettePlugin extends Plugin {
     this.app = app;
     this.svg = app.svg;
 
-    console.log(this.app.plugins)
+    //console.log(this.app.plugins)
     this.workbenchPlugin = this.app.plugins.get('WorkbenchPlugin');
     this.engine = this.workbenchPlugin.engine;
 
@@ -125,7 +125,7 @@ export class PalettePlugin extends Plugin {
 
       agentButton.setAttribute("draggable", "true");
       agentButton.addEventListener("dragstart", (e) => {
-        console.log(e)
+        //console.log(e)
         e.dataTransfer.setData("text/plain", agentData.type);
         e.dataTransfer.setData("application/agent-name", agentName);
         e.dataTransfer.setData("application/agent-type", agentData.type);

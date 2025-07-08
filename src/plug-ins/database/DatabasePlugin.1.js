@@ -68,7 +68,7 @@ export class DatabasePlugin extends Plugin {
     // NOTE: fromId, toId are just from the connection data in the Map
     const restoreConnectionOrchestrator = async ({id,  fromPortId,   toPortId}) => {
 
-      console.log('ZZZ', {fromId: fromPortId, toId: toPortId})
+      //console.log('ZZZ', {fromId: fromPortId, toId: toPortId})
 
       if(!this.records.ready) await records.once('ready');
       if(!records.has(id)) records.set(id, {}); // the record was not in database, set a blank object and bail
@@ -147,7 +147,7 @@ export class DatabasePlugin extends Plugin {
     }); // define
 
     aggregator.start(`connectionReady-${connection.id}`, connection.id);
-      console.log('getActiveAggregations1', aggregator.getActiveAggregations());
+      //console.log('getActiveAggregations1', aggregator.getActiveAggregations());
 
 
 
@@ -160,7 +160,7 @@ export class DatabasePlugin extends Plugin {
     // drive data into the aggreaagator -->
     this.app.on('portAdded', port => {
       aggregator.emit('portAdded', port);
-      console.log('getActiveAggregations', aggregator.getActiveAggregations());
+      //console.log('getActiveAggregations', aggregator.getActiveAggregations());
     });
 
     this.connections = new PersistentMap(null, {prefix: 'pishposh-connections', onRestored:db=>db.forEach((v,k)=>restoreConnection((v,k)))});

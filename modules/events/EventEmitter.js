@@ -49,7 +49,7 @@ export class EventEmitter {
     }
     return new Promise((resolve) => {
       const off = this.on(eventName, (data) => {
-        console.log("UNTIL", data);
+        //console.log("UNTIL", data);
         if (data.id == id) {
           off();
           resolve(data);
@@ -92,7 +92,7 @@ export class EventEmitter {
   emit(eventName, eventData, actionReplay = true) {
     // actionReplay is true by default
 
-    if (actionReplay && eventData.id) this.actionReplay.set(eventName + "#" + eventData.id, eventData);
+    if (actionReplay && eventData?.id) this.actionReplay.set(eventName + "#" + eventData.id, eventData);
 
     const subscribers = this.eventNames.get(eventName) ?? new Set();
     for (const subscriber of subscribers) {

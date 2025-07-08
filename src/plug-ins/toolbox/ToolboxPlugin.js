@@ -48,7 +48,7 @@ export class ToolboxPlugin extends Plugin {
     });
 
     this.app.on("selectTool", (toolId) => {
-      console.log("selectTool", toolId);
+      //console.log("selectTool", toolId);
       if (!this.app.tools[toolId]) return console.error("No such tool", toolId);
       const dataToolIdentity = this.app.tools[toolId].id;
       this.svg.setAttribute("data-tool", dataToolIdentity);

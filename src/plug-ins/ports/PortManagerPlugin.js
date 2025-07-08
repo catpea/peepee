@@ -45,7 +45,7 @@ export class PortManagerPlugin extends Plugin {
     const {id} = agent;
 
     const station = this.stationInstances.get(id);
-    console.log(id, this.stationInstances, station)
+    //console.log(id, this.stationInstances, station)
     const manifest = this.agentManifests.get(station.agentType);
     // const agent = this.agentInstances.get(id);
 
@@ -114,7 +114,7 @@ export class PortManagerPlugin extends Plugin {
         unsubscribe: new Set(),
       };
 
-      console.log('BBB portInstances.set', port.id, port)
+      //console.log('BBB portInstances.set', port.id, port)
       this.portInstances.set(port.id, port);
 
       const unsubscribeCx = port.x.subscribe(v=>portElement.setAttribute("cx", v));
