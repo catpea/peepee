@@ -412,21 +412,29 @@ export class SignalFieldGenerator {
 
 export class PropertiesForm {
 
-  constructor(device, manifest, database, target){
+  constructor(app, device, manifest, database, target){
     this.subscriptions = new Set();
 
+    console.log('this.manifest', manifest)
+
+    this.app = app;
     this.device = device;
     this.manifest = manifest;
     this.database = database;
     this.target = target;
 
+
+    this.recordsManager = this.app.plugins.get('RecordsManagerPlugin');
+    this.recordInstances = this.recordsManager.recordInstances;
+
+
     this.spawn();
   }
 
-  spawn(){
+  async spawn(){
 
     const generator = new SignalFieldGenerator();
-
+    console.log('this.manifest', this)
     const [elements, signals, unsubscriptions] = generator.generateFields(this.manifest.node.properties);
 
     for(const element of elements){
@@ -435,23 +443,29 @@ export class PropertiesForm {
 
     unsubscriptions.forEach(subscription=>this.subscriptions.add(subscription));
 
+
+
+
+
     // signals
-    const selectedStationRecord = this.database.records.get(this.device.id);
+    let record = this.recordInstances.get(this.device.id);
+    if(!record){
+      await this.app.until('recordAdded', this.device.id);
+      record = this.recordInstances.get(this.device.id);
+    }
 
     for(const fieldSignal of signals){
       const propertyName = fieldSignal.identity;
 
+      // LOAD FROM RECORD into FORM !!!!!
       // Pass existing value from the record to the UI
-      if(selectedStationRecord[propertyName]) fieldSignal.value = selectedStationRecord[propertyName];
+      if(record.has(propertyName)) fieldSignal.value = record.value(propertyName);
 
       // When the UI artefact changes value
       fieldSignal.subscribe(value=>{
-        const activeRecord = this.database.records.get(this.device.id);
-        // assign that value to the appropriate record field
-        activeRecord[propertyName] = value;
-        // store the updated record in the database.
-        this.database.records.set(this.device.id, activeRecord);
-        //console.log(`activeRecord: Updated database record ${this.device.id}/${propertyName}`, value)
+        console.log('record.set', record);
+        console.log('record.set', propertyName, value);
+        record.set(propertyName, value);
       });
 
     }

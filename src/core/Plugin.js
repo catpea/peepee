@@ -11,6 +11,12 @@ export class Plugin {
     this.subscriptions.add(unsubscribe);
   }
 
+  tuneIn(signal, callback){
+    if(!signal) throw new Error('Signal is missing');
+    const unsubscribe = signal.subscribe(callback)
+    this.subscriptions.add(unsubscribe);
+  }
+
   linkStyleSheet(url) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';

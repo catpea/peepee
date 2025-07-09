@@ -24,6 +24,8 @@ import { ConnectionRenderPlugin } from "./plug-ins/connection/ConnectionRenderPl
 import { ConnectionDeletePlugin } from "./plug-ins/connection/ConnectionDeletePlugin.js";
 import { ConnectionCreatePlugin } from "./plug-ins/connection/ConnectionCreatePlugin.js";
 
+import { RecordsManagerPlugin } from "./plug-ins/records/RecordsManagerPlugin.js";
+
 export class SubwayBuilder extends HTMLElement {
   constructor() {
     super();
@@ -92,6 +94,8 @@ export class SubwayBuilder extends HTMLElement {
     app.use(new ConnectionRenderPlugin());
     app.use(new ConnectionDeletePlugin());
     app.use(new ConnectionCreatePlugin());
+
+    app.use(new RecordsManagerPlugin());
 
     app.use(new DatabasePlugin());
 

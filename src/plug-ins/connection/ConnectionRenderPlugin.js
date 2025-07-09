@@ -26,6 +26,11 @@ export class ConnectionRenderPlugin extends Plugin {
     this.portManager = app.plugins.get('PortManagerPlugin');
     this.portInstances = this.portManager.portInstances;
 
+    this.recordsManager = app.plugins.get('RecordsManagerPlugin');
+    this.recordInstances = this.recordsManager.recordInstances;
+
+    this.database = app.plugins.get('DatabasePlugin');
+
     this.app.on("connectionAdded", (connection) => this.renderConnection(connection));
     this.app.on("connectionRestored", (connection) => this.renderConnection(connection));
     this.app.on("connectionRemoved", (id) => this.removeConnection(id));
@@ -47,7 +52,7 @@ export class ConnectionRenderPlugin extends Plugin {
     labels.forEach((el) => el.remove());
   }
 
-  renderConnection(connection) {
+  async renderConnection(connection) {
 
     const fromPort = this.portInstances.get(connection.fromPortId);
     const toPort   = this.portInstances.get(connection.toPortId);
@@ -55,10 +60,24 @@ export class ConnectionRenderPlugin extends Plugin {
     if (!fromPort) throw new Error(`fromPort not found in portInstances (${connection.fromPortId})`);
     if (!toPort) throw new Error(`toPort not found in portInstances (${connection.toPortId})`);
 
+
+    let record = this.recordInstances.get(connection.id);
+    if(!record){
+      await this.app.until('recordAdded', connection.id);
+      record = this.recordInstances.get(connection.id);
+    }
+
     const pathId = `path-${connection.id}`;
+
+
+
+
+
+
 
     // Create path
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    this.tuneIn(record.get('color', 'var(--green)'), v=>path.style.stroke = v)
 
     path.setAttribute("id", pathId);
     path.setAttribute("class", "connection-path");
@@ -96,12 +115,12 @@ export class ConnectionRenderPlugin extends Plugin {
     this.layers.labels.appendChild(endText);
 
     // Select connection
-    path.addEventListener("click", (e) => {
+    this.listenTo(path, 'click', (e) => {
       e.stopPropagation();
       this.app.emit("selectConnection", connection);
     });
 
-    const updateOffsets = () => {
+    const updateLabels = () => {
       requestAnimationFrame(() => {
         const totalLength = path.getTotalLength();
         const aestheticSidePadding = 18;
@@ -113,33 +132,31 @@ export class ConnectionRenderPlugin extends Plugin {
 
     const updateAll = () => {
       updatePath();
-      updateOffsets();
+      updateLabels();
     };
 
     // Subscribe position changes
-    console.error('UNSUBSCRIBE ME!')
-    fromPort.x.subscribe(updateAll);
-    fromPort.y.subscribe(updateAll);
-    toPort.x.subscribe(updateAll);
-    toPort.y.subscribe(updateAll);
+
+    this.tuneIn(fromPort.x, updateAll);
+    this.tuneIn(fromPort.y, updateAll);
+    this.tuneIn(toPort.x, updateAll);
+    this.tuneIn(toPort.y, updateAll);
+
 
     // Text updates
-    connection.signals.centerLabel?.subscribe((text) => {
-      midTP.textContent = text;
-      updateOffsets();
-    });
+    // this.tuneIn(connection.signals.centerLabel, (text) => { midTP.textContent = text; updateLabels(); });
+    // this.tuneIn(connection.signals.startLabel, (text) => { startTP.textContent = text; updateLabels(); });
+    // this.tuneIn(connection.signals.endLabel, (text) => { endTP.textContent = text; updateLabels(); });
 
-    connection.signals.startLabel?.subscribe?.((text) => {
-      startTP.textContent = text;
-      updateOffsets();
-    });
 
-    connection.signals.endLabel?.subscribe?.((text) => {
-      endTP.textContent = text;
-      updateOffsets();
-    });
+
+
+    this.tuneIn(record.get('centerLabel', ''), (text) => { midTP.textContent = text; updateLabels(); })
+    this.tuneIn(record.get('startLabel', ''),  (text) => { startTP.textContent = text; updateLabels(); })
+    this.tuneIn(record.get('endLabel', ''),    (text) => { endTP.textContent = text; updateLabels(); })
+
 
     // Initial offset position
-    updateOffsets();
+    updateLabels();
   }
 }

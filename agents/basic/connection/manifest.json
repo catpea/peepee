@@ -12,66 +12,34 @@
     "borderColor": "#E1E8ED",
 
     "properties": [
+
+
       {
-        "id": "fromStationId",
-        "type": "hidden",
-        "name": "From Station Id",
-        "description": "The unique identifier for the starting station in the connection.",
-        "defaultValue": ""
-      },
-      {
-        "id": "toStationId",
-        "type": "hidden",
-        "name": "To Station Id",
-        "description": "The unique identifier for the destination station in the connection.",
-        "defaultValue": ""
-      },
-      {
-        "id": "fromId",
-        "type": "hidden",
-        "name": "From Id",
-        "description": "The identifier for the node from which the connection originates.",
-        "defaultValue": ""
-      },
-      {
-        "id": "toId",
-        "type": "hidden",
-        "name": "To Id",
-        "description": "The identifier for the node to which the connection leads.",
-        "defaultValue": ""
-      },
-      {
-        "id": "startLabel",
+        "name": "startLabel",
         "type": "text",
-        "name": "Start Label",
+        "label": "Start Label",
         "description": "A label that describes the starting point of the connection.",
         "defaultValue": ""
       },
       {
-        "id": "centerLabel",
+        "name": "centerLabel",
         "type": "text",
-        "name": "Center Label",
+        "label": "Center Label",
         "description": "A label that represents the connection itself, typically displayed in the center.",
         "defaultValue": ""
       },
       {
-        "id": "endLabel",
+        "name": "endLabel",
         "type": "text",
-        "name": "End Label",
+        "label": "End Label",
         "description": "A label that describes the endpoint of the connection.",
         "defaultValue": ""
       },
+
       {
-        "id": "agentType",
-        "type": "hidden",
-        "name": "Agent Type",
-        "description": "The type of agent responsible for managing the connection, which may define its behavior.",
-        "defaultValue": ""
-      },
-      {
-        "id": "color",
+        "name": "color",
         "type": "color",
-        "name": "Line Color",
+        "label": "Line Color",
         "description": "The color of the line representing the connection, used for visual distinction.",
         "defaultValue": "orange"
       }

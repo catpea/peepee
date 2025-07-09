@@ -16,6 +16,10 @@ export class StationRenderPlugin extends Plugin {
     this.app = app;
     this.svg = app.svg;
 
+    this.recordsManager = app.plugins.get('RecordsManagerPlugin');
+    this.recordInstances = this.recordsManager.recordInstances;
+
+
     this.app.on('stationAdded', station => this.renderStation(station) );
     this.app.on('stationRestored', station => this.renderStation(station) );
     this.app.on('stationRemoved', id => this.removeStation(id));
@@ -86,7 +90,13 @@ export class StationRenderPlugin extends Plugin {
 
   }
 
-  renderStationMarker( station, group ) {
+  async renderStationMarker( station, group ) {
+
+        let record = this.recordInstances.get(station.id);
+    if(!record){
+      await this.app.until('recordAdded', station.id);
+      record = this.recordInstances.get(station.id);
+    }
 
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circle.setAttribute("class", "station-circle");
@@ -106,6 +116,10 @@ export class StationRenderPlugin extends Plugin {
       circle.setAttribute("cy", y);
       // label.setAttribute("y", y - 23);
     });
+
+    this.tuneIn(record.get('strokeColor', 'var(--base01)'), v=>circle.style.stroke = v)
+    this.tuneIn(record.get('fillColor', 'var(--base03)'), v=>circle.style.fill = v)
+
 
   }
 

@@ -60,7 +60,7 @@ export class PropertiesPlugin extends Plugin {
     // Laad Manifest
     const manifest = await this.app.until('manifestAdded', station.agentType);
     // create new UI
-    this.form = new PropertiesForm(station, manifest, this.database, this.propertyListElement);
+    this.form = new PropertiesForm(this.app, station, manifest, this.database, this.propertyListElement);
   }
 
   async showConnectionProperties(connection){
@@ -77,7 +77,7 @@ export class PropertiesPlugin extends Plugin {
     }
 
     // create new UI
-    this.form = new PropertiesForm(connection, manifest, this.database, this.propertyListElement);
+    this.form = new PropertiesForm(this.app, connection, manifest, this.database, this.propertyListElement);
   }
 
 } // class
