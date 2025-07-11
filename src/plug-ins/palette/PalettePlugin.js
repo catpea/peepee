@@ -77,7 +77,7 @@ export class PalettePlugin extends Plugin {
         // label: agentName,
         agentType
       };
-      this.app.emit("stationAddRequest", raw);
+      this.app.emit("stationAdd", raw);
     });
 
 

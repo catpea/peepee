@@ -29,6 +29,9 @@ export class ConnectionRenderPlugin extends Plugin {
     this.recordsManager = app.plugins.get('RecordsManagerPlugin');
     this.recordInstances = this.recordsManager.recordInstances;
 
+    this.colorManagerPlugin = app.plugins.get('ColorManagerPlugin');
+    this.primaryColorTransform = this.colorManagerPlugin.primaryColorTransform;
+
     this.database = app.plugins.get('DatabasePlugin');
 
     this.app.on("connectionAdded", (connection) => this.renderConnection(connection));
@@ -77,7 +80,7 @@ export class ConnectionRenderPlugin extends Plugin {
 
     // Create path
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    this.tuneIn(record.get('color', 'var(--green)'), v=>path.style.stroke = v)
+    this.tuneIn(record.get('color', 'green'), v=>path.style.stroke =  this.primaryColorTransform(v) )
 
     path.setAttribute("id", pathId);
     path.setAttribute("class", "connection-path");

@@ -18,10 +18,9 @@ export class RecordsManagerPlugin extends Plugin {
     this.app = app;
     this.svg = this.app.svg;
 
-    this.app.on('recordAddRequest', station => this.recordAddRequest(station) );
+    this.app.on('recordAdd', station => this.recordAdd(station) );
     this.app.on('recordRestore', raw => this.recordRestore(raw) );
 
-    // this.app.on('recordRemovalRequest', id => this.recordRemove(id) );
     this.app.on('recordRemove', id => this.recordRemove(id) );
 
   }
@@ -29,7 +28,7 @@ export class RecordsManagerPlugin extends Plugin {
 
 
 
-  recordAddRequest(station) {
+  recordAdd(station) {
     const record = new Record({ id: station.id });
     this.recordInstances.set(record.id, record);
     this.eventDispatch('recordAdded', record);

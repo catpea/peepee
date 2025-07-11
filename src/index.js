@@ -1,6 +1,7 @@
 // SubwayBuilder.js
 import { Application } from "./Application.js";
 
+import { ColorManagerPlugin } from "./plug-ins/theme/ColorManagerPlugin.js";
 import { ToolboxPlugin } from "./plug-ins/toolbox/ToolboxPlugin.js";
 import { PropertiesPlugin } from "./plug-ins/properties/PropertiesPlugin.js";
 import { PalettePlugin } from "./plug-ins/palette/PalettePlugin.js";
@@ -68,6 +69,7 @@ export class SubwayBuilder extends HTMLElement {
     const svg = this.querySelector("#main-svg");
     const app = new Application(svg);
 
+    app.use(new ColorManagerPlugin());
     app.use(new ToolboxPlugin());
 
     app.use(new WorkbenchPlugin());

@@ -25,7 +25,7 @@ export class StationManagerPlugin extends Plugin {
     .map(e=>({x:e.detail.worldX, y:e.detail.worldY}))
     .filter(()=>this.app.selectedTool.value == 'create')
     // .log( v=> `Adding station: ${JSON.stringify(v)}`)
-    .subscribe(raw=>this.app.emit('stationAddRequest', raw))
+    .subscribe(raw=>this.app.emit('stationAdd', raw))
 
 
    // console.log(import.meta.url)

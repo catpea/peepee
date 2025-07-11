@@ -106,8 +106,8 @@ export class GhostLinePlugin extends Plugin {
           toPortName: toPortName,
 
         }
-        console.info("BBB connectionAddRequest", connection)
-        this.app.emit("connectionAddRequest", connection);
+        console.info("BBB connectionAdd", connection)
+        this.app.emit("connectionAdd", connection);
 
       }
     }

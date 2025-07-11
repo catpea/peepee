@@ -2,7 +2,7 @@
  * ColorFunctions - A comprehensive collection of nature and sci-fi inspired color transformations
  * Based on real-world light phenomena and fictional energy effects
  */
-class ColorFunctions {
+export class ColorFunctions {
   constructor() {
     this.time = 0;
     this.animationId = null;
@@ -645,7 +645,14 @@ class ColorFunctions {
   }
 
   // Convert RGB to hex
+  static rgboToHex(rgb) {
+    const { r, g, b } = rgb;
+    return ColorFunctions.rgbToHex(r, g, b);
+  }
   static rgbToHex(r, g, b) {
+
+
+    console.info(r, g, b)
     return (
       "#" +
       [r, g, b]
@@ -666,6 +673,6 @@ class ColorFunctions {
           g: parseInt(result[2], 16),
           b: parseInt(result[3], 16),
         }
-      : null;
+      : {r:0,g:0,b:0};
   }
 }

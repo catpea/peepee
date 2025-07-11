@@ -74,7 +74,7 @@ export class DatabasePlugin extends Plugin {
     this.app.on("stationRemoved", (id) => this.stations.delete(id));
 
     // this.app.on("stationAdded", (data) => records.set(data.id, {}));
-    this.app.on("stationAdded", (data) => this.app.emit('recordAddRequest', data) );
+    this.app.on("stationAdded", (data) => this.app.emit('recordAdd', data) );
     this.app.on("stationRemoved", (id) => this.app.emit('recordRemove', data));
 
 
@@ -139,7 +139,7 @@ export class DatabasePlugin extends Plugin {
     // this.app.on("connectionRemoved", (id) => records.delete(id));
 
 
-    this.app.on("connectionAdded", (data) => this.app.emit('recordAddRequest', data) );
+    this.app.on("connectionAdded", (data) => this.app.emit('recordAdd', data) );
     this.app.on("connectionRemoved", (id) => this.app.emit('recordRemove', data));
 
 
