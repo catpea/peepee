@@ -1,28 +1,8 @@
-# 📘 peepee – Visual Programming via Subway Maps
+# 📘 peepee – Visual Programming For All
 
-**peepee** is a lightweight, pure-DOM visual programming environment with modular plugin architecture. Users build “programs” by placing stations (nodes) and connecting them (edges). It uses reactive signals and event-driven agents for computation and data flow.
-
-## 🔗 Overview
-
-```
-SubwayBuilder (Web Component)
- └─ Application (core)
-      ├─ GridPlugin
-      ├─ ToolboxPlugin
-      ├─ PanZoomPlugin
-      ├─ StationPlugin
-      ├─ ConnectPlugin
-      ├─ ConnectionLinePlugin
-      ├─ MoveStationPlugin
-      ├─ AgentLibraryPlugin
-      ├─ AgentsPlugin
-      ├─ AgentChooserPlugin
-      └─ PropertiesPanelPlugin
-```
+**peepee** is a lightweight, pure-DOM visual programming environment with modular plugin architecture. Users build “programs” by placing stations (nodes) and connecting them (connections). It uses reactive signals and event-driven agents for computation and data flow.
 
 Each plugin adds one cohesive feature — from visuals and interaction to agents and metadata — allowing for clean, feature-by-feature extension.
-
----
 
 ## 🚂 Application Core
 
@@ -98,43 +78,6 @@ Each plugin adds one cohesive feature — from visuals and interaction to agents
 
 * Displays selected station/connection properties (position, label, agent)
 * Supports live editing
-
----
-
-## 🧩 How to Use
-
-**1. Installation**
-
-```bash
-npm install peepee
-# or clone the repo:
-git clone https://github.com/catpea/peepee.git
-```
-
-**2. Add to your HTML**
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <subway-builder></subway-builder>
-    <script type="module" src="./SubwayBuilder.js"></script>
-  </body>
-</html>
-```
-
-**3. Interact!**
-
-* 🛠 Switch tools via the toolbar
-* ⚪ Click in **station mode** to add nodes
-* 📏 Drag in **select mode** to pan or move nodes
-* 🔗 In **connect mode**, drag from one station to another
-* 🧪 Use the **Agents panel** to assign agents (e.g., TimerAgent, GraphAgent)
-* ✍️ Inspect and edit station/connection properties in the **Properties panel**
 
 ## 📚 Why It Matters
 
