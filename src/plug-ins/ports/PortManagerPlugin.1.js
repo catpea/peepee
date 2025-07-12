@@ -25,8 +25,6 @@ export class PortManagerPlugin extends Plugin {
     this.stationManager = app.plugins.get('StationManagerPlugin');
     this.stationInstances = this.stationManager.stationInstances;
 
-    this.widgetManagerPlugin = app.plugins.get('WidgetManagerPlugin');
-    this.widgetEngine = this.widgetManagerPlugin.widgetEngine;
 
     this.app.on("stationAgentAdded", (agent) => this.instantiatePorts(agent));
 
@@ -42,51 +40,7 @@ export class PortManagerPlugin extends Plugin {
     this.subscriptions.clear();
   }
 
-
-
-
-
-
-
-
-
-
-
-
   async instantiatePorts(agent) {
-    const {id} = agent;
-    const station = this.stationInstances.get(id);
-    const manifest = this.agentManifests.get(station.agentType);
-
-
-
-
-      const test1 = `
-        <Panel caption="Basic Example" left="500" top="500" width="320" height="200" horizontalCenter="0" verticalCenter="0">
-          <Group left="10" top="10">
-            <VGroup gap="5">
-              ${manifest.node.inputs.map(port=>`<Port name="input" caption="${port.id}"/>`).join()}
-              <Button caption="Click Me" />
-              <Button caption="Or Me" />
-            </VGroup>
-          </Group>
-        </Panel>
-      `;
-      const rootComponent = this.widgetEngine.append(test1);
-      rootComponent.element.setAttribute("data-station-id", station.id);
-
-    rootComponent.element.addEventListener("click",()=> this.eventDispatch("selectNode", station) );
-
-
-      station.subscribe(({x,y,r})=>{
-
-        rootComponent.attributes.top.value = y;
-        rootComponent.attributes.left.value = x;
-
-      });
-  }
-
-  async instantiatePorts1(agent) {
 
     const {id} = agent;
 
@@ -187,11 +141,6 @@ export class PortManagerPlugin extends Plugin {
     this.eventDispatch("portsAdded", agent);
 
   }
-
-
-
-
-
 
   destroyPorts(stationId) {
 

@@ -19,8 +19,6 @@ export class StationRenderPlugin extends Plugin {
     this.recordsManager = app.plugins.get('RecordsManagerPlugin');
     this.recordInstances = this.recordsManager.recordInstances;
 
-    this.widgetManagerPlugin = app.plugins.get('WidgetManagerPlugin');
-    this.widgetEngine = this.widgetManagerPlugin.widgetEngine;
 
     this.app.on('stationAdded', station => this.renderStation(station) );
     this.app.on('stationRestored', station => this.renderStation(station) );
@@ -59,13 +57,6 @@ export class StationRenderPlugin extends Plugin {
 
   renderStation( station ) {
 
-
-
-    return;
-
-
-
-
     const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     group.setAttribute("class", "station");
     group.setAttribute("data-station-id", station.id);
@@ -76,8 +67,6 @@ export class StationRenderPlugin extends Plugin {
 
     this.app.layers.stations.appendChild(group);
   }
-
-
   renderStationLabel(station){
 
     const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -101,13 +90,9 @@ export class StationRenderPlugin extends Plugin {
 
   }
 
-
-
-
-
   async renderStationMarker( station, group ) {
 
-    let record = this.recordInstances.get(station.id);
+        let record = this.recordInstances.get(station.id);
     if(!record){
       await this.app.until('recordAdded', station.id);
       record = this.recordInstances.get(station.id);
@@ -138,32 +123,32 @@ export class StationRenderPlugin extends Plugin {
 
   }
 
-  // renderStationPorts(station, group){
+  renderStationPorts(station, group){
 
-  //   if(agent.ports){
-  //     // Render in-ports
-  //     let inStartAngle = 270;
-  //     const inAngleStep = -36;
-  //     for(const [index, {id, type, format}] of Object.entries(agent.ports.filter(port=>port.type=='in'))){
-  //       const {x, y} = this.getPortCircleCoordinates({ r: station.r.value, x: station.x.value, y: station.y.value, angle:inStartAngle });
-  //       const port = this.renderPort({id, r:station.r.value/2, x, y});
-  //       group.appendChild(port);
-  //       inStartAngle+=inAngleStep;
-  //     }
+    if(agent.ports){
+      // Render in-ports
+      let inStartAngle = 270;
+      const inAngleStep = -36;
+      for(const [index, {id, type, format}] of Object.entries(agent.ports.filter(port=>port.type=='in'))){
+        const {x, y} = this.getPortCircleCoordinates({ r: station.r.value, x: station.x.value, y: station.y.value, angle:inStartAngle });
+        const port = this.renderPort({id, r:station.r.value/2, x, y});
+        group.appendChild(port);
+        inStartAngle+=inAngleStep;
+      }
 
-  //     // Render out-ports
-  //     let outStartAngle = 90;
-  //     const outAngleStep = 36;
-  //     for(const {id, type, format} of Object.entries(agent.ports.filter(port=>port.type=='out'))){
-  //       const {x, y} = this.getPortCircleCoordinates({ r: station.r.value, x: station.x.value, y: station.y.value, angle:outStartAngle });
-  //       const port = this.renderPort({id, r:station.r.value/2, x, y});
-  //       group.appendChild(port);
-  //       outStartAngle+=outAngleStep;
-  //     }
-  //   }
+      // Render out-ports
+      let outStartAngle = 90;
+      const outAngleStep = 36;
+      for(const {id, type, format} of Object.entries(agent.ports.filter(port=>port.type=='out'))){
+        const {x, y} = this.getPortCircleCoordinates({ r: station.r.value, x: station.x.value, y: station.y.value, angle:outStartAngle });
+        const port = this.renderPort({id, r:station.r.value/2, x, y});
+        group.appendChild(port);
+        outStartAngle+=outAngleStep;
+      }
+    }
 
 
-  // }
+  }
 
 }
 

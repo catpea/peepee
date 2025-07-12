@@ -49,7 +49,8 @@ export class StationMovePlugin extends Plugin {
     onMouseDown(e) {
     if (!this.toolActive.value) return;
 
-    const target = e.target.closest("g.station");
+    // const target = e.target.closest("g.station");
+    const target = e.target.closest("g.panel");
     if (!target) return;
 
     const id = target.dataset.stationId;
@@ -82,7 +83,6 @@ export class StationMovePlugin extends Plugin {
 
   onMouseUp(e) {
     if (!this.draggingStation) return;
-
     this.app.emit('stationUpdated', this.draggingStation)
     this.draggingStation = null;
     this.svg.classList.remove("dragging");

@@ -19,6 +19,7 @@ export class Application extends EventEmitter {
       trays: document.createElementNS("http://www.w3.org/2000/svg", "g"),
       connections: document.createElementNS("http://www.w3.org/2000/svg", "g"),
       stations: document.createElementNS("http://www.w3.org/2000/svg", "g"),
+      widgets: document.createElementNS("http://www.w3.org/2000/svg", "g"),
       ports: document.createElementNS("http://www.w3.org/2000/svg", "g"),
       labels: document.createElementNS("http://www.w3.org/2000/svg", "g"),
       ghost: document.createElementNS("http://www.w3.org/2000/svg", "g"),
