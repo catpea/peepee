@@ -36,15 +36,15 @@ class SpicyEmitter extends EventEmitter {
 
     const condResult = await condFn(eventData);
 
-    console.info('XXXXXXXXXXX condResult', condResult);
+    //console.info('XXXXXXXXXXX condResult', condResult);
 
     if (condResult === true) {
       // Synchronous success - emit immediately
-      console.info('Synchronous success - emit immediately')
+      //console.info('Synchronous success - emit immediately')
       this.emit(eventName, eventData);
       return;
     }else{
-      console.info('No synchronous success.')
+      //console.info('No synchronous success.')
     }
 
     // condResult should be an EventEmitter for async waiting

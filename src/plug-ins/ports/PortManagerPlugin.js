@@ -1,6 +1,8 @@
+import { Signal } from 'signals';
+
 import { Plugin } from "plugin";
 
-import { rid, ReactiveSignal as Signal, namedCombineLatest, fromEvent } from "../../core/Signal.js";
+// import { rid, ReactiveSignal as Signal, namedCombineLatest, fromEvent } from "../../core/Signal.js";
 
 export class PortManagerPlugin extends Plugin {
   app;
@@ -57,14 +59,23 @@ export class PortManagerPlugin extends Plugin {
       portElement: portComponent.element,
       x: new Signal(0),
       y: new Signal(0),
+      unsubscribe:[],
     };
 
     // when station changes of moves, update port coordinates
-    station.subscribe(() => {
-      const { e: x, f: y } = port.portElement.getCTM();
+    station.connect().combineLatest(this.engine.scale, portComponent.attributes.portSocketX ).subscribe((arg) => {
+      const [id, x1, y1, r, label, agentType, scale, portSocketX] = arg.flat();
+      // if(! portComponent.portSocket) return;
+      // if(! portComponent.portSocket.getCTM()) return;
+      //console.info('CTM UPDATE, lol', arg )
+      const { e: x, f: y } = portComponent.portSocket.getCTM();
       const point = this.engine.clientToWorld(x, y);
-      port.x.value = point.x;
+      port.x.value = point.x + portSocketX;
       port.y.value = point.y + 8;
+
+      // port.x.value = portComponent.attributes.portSocketXCTM.value;
+      // port.y.value = portComponent.attributes.portSocketYCTM.valuealue = portComponent.attributes.portSocketYCTM.value;
+
     });
 
     this.portInstances.set(port.id, port);
@@ -80,8 +91,8 @@ export class PortManagerPlugin extends Plugin {
       <Panel caption="Basic Example" left="500" top="500" width="200" height="200" horizontalCenter="0" verticalCenter="0">
         <Group left="10" top="10">
           <VGroup gap="5">
-            ${manifest.node.inputs.map((port) => `<Port id="${[station.id, "input", port.id].join(":")}" group="${station.id}" type="input" caption="${port.id}"/>`).join()}
-            ${manifest.node.outputs.map((port) => `<Port id="${[station.id, "output", port.id].join(":")}" group="${station.id}" type="output" caption="${port.id}"/>`).join()}
+            ${manifest.node.inputs.map((port) => `<Port id="${[station.id, "input", port.id].join(":")}" group="${station.id}" type="input" caption="${port.id}" width="180"/>`).join()}
+            ${manifest.node.outputs.map((port) => `<Port id="${[station.id, "output", port.id].join(":")}" group="${station.id}" type="output" caption="${port.id}" width="180"/>`).join()}
           </VGroup>
         </Group>
       </Panel>
@@ -91,9 +102,12 @@ export class PortManagerPlugin extends Plugin {
     rootComponent.element.setAttribute("data-station-id", station.id);
     rootComponent.element.addEventListener("click", () => this.eventDispatch("selectNode", station));
 
-    station.subscribe(({ x, y, r }) => {
+    // Station Position
+    station.connect().subscribe(([id, x, y, r, label, agentType]) => {
+
       rootComponent.attributes.top.value = y;
       rootComponent.attributes.left.value = x;
+
     });
 
     manifest.node.inputs.forEach((o) => this.createPort(station, 'input', o));

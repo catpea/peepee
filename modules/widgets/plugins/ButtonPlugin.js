@@ -40,7 +40,7 @@ class ButtonComponent extends Component {
 
   }
 
-  render(parent) {
+  render(parentComponent, parentElement) {
     this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
     this.element.setAttribute("id", this.id);
     this.element.classList.add('button');
@@ -92,7 +92,7 @@ class ButtonComponent extends Component {
         buttonBg.classList.remove('active');
     });
 
-    parent.appendChild(this.element);
+    parentElement.appendChild(this.element);
     return this.element;
   }
 }

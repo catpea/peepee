@@ -25,10 +25,8 @@ export class ConnectionDeletePlugin extends Plugin {
    this.app.on('stationRemoved', stationId => {
 
 
-          this.connectionInstances.values().filter(({fromStationId})=>fromStationId===stationId)
-       .forEach(({fromStationId})=>console.log('AAA', {fromStationId}));
-          this.connectionInstances.values().filter(({toStationId})=>toStationId===stationId)
-       .forEach(({toStationId})=>console.log('AAA', {toStationId}));
+          // this.connectionInstances.values().filter(({fromStationId})=>fromStationId===stationId).forEach(({fromStationId})=>console.log('AAA', {fromStationId}));
+          // this.connectionInstances.values().filter(({toStationId})=>toStationId===stationId).forEach(({toStationId})=>console.log('AAA', {toStationId}));
 
 
      this.connectionInstances.values().filter(({fromStationId})=>fromStationId===stationId).forEach(({id})=>this.connectionRemove(id));

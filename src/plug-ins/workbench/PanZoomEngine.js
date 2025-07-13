@@ -1,4 +1,5 @@
-import { rid, ReactiveSignal as Signal, fromEvent, namedCombineLatest } from "../../core/Signal.js";
+// import { rid, ReactiveSignal as Signal, fromEvent, namedCombineLatest } from "../../core/Signal.js";
+import { Signal } from 'signals';
 
 // Main PanZoomEngine class
 export class PanZoomEngine {
@@ -20,7 +21,6 @@ export class PanZoomEngine {
     this.scale = new Signal(1);
     this.panX = new Signal(0);
     this.panY = new Signal(0);
-    this.scale = new Signal(1);
 
     this.tileSize = 40;
 

@@ -82,7 +82,7 @@ export class ColorFunctions {
   static rgbToHex(r, g, b) {
 
 
-    console.info(r, g, b)
+    //console.info(r, g, b)
     return (
       "#" +
       [r, g, b]

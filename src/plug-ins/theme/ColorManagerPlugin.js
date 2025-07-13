@@ -23,7 +23,7 @@ export class ColorManagerPlugin extends Plugin {
       this.createTheme(3),
     ];
 
-    console.log('this.floor2', this.floor2)
+    //console.log('this.floor2', this.floor2)
 
     this.primaryColorTransform = (incomingColor) => {
 

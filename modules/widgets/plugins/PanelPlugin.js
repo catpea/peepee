@@ -4,11 +4,11 @@ import { Signal } from 'signals';
 export class PanelComponentPlugin {
 
     start() {
-        console.log('Panel plugin started');
+        //console.log('Panel plugin started');
     }
 
     stop() {
-        console.log('Panel plugin stopped');
+        //console.log('Panel plugin stopped');
     }
 
     createComponent(attributes, engine) {
@@ -68,7 +68,7 @@ class PanelComponent extends Component {
 
 
 
-    render(parent) {
+    render(parentComponent, parentElement) {
 
 
         this.clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
@@ -158,10 +158,10 @@ class PanelComponent extends Component {
 
         // Render children
         this.children.forEach(child => {
-            child.render(contentArea);
+            child.render(this, contentArea);
         });
 
-        parent.appendChild(this.element);
+        parentElement.appendChild(this.element);
         return this.element;
     }
 }

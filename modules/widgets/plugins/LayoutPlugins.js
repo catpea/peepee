@@ -19,7 +19,7 @@ class GroupComponent extends Component {
     this.installAttributeSignals(componentAttributes, { override: false });
   }
 
-  render(parent) {
+  render(parentComponent, parentElement) {
     this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
     this.subscriptions.add(() => this.element.remove()); // destroy element on stop
 
@@ -31,10 +31,10 @@ class GroupComponent extends Component {
 
     // Render children
     this.children.forEach((child) => {
-      child.render(this.element);
+      child.render(this, this.element);
     });
 
-    parent.appendChild(this.element);
+    parentElement.appendChild(this.element);
     return this.element;
   }
 }
@@ -56,7 +56,7 @@ class VGroupComponent extends Component {
     };
     this.installAttributeSignals(componentAttributes, { override: false });
   }
-  render(parent) {
+  render(parentComponent, parentElement) {
     this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
     this.subscriptions.add(() => this.element.remove()); // destroy element on stop
 
@@ -69,13 +69,13 @@ class VGroupComponent extends Component {
     // Layout children vertically
 
     this.children.forEach((child, index) => {
-      child.render(this.element);
-      console.log(child)
+      child.render(this, this.element);
+      //console.log(child)
       child.attributes.top.value = yOffset;
       yOffset += child.attributes.height.value + gap;
     });
 
-    parent.appendChild(this.element);
+    parentElement.appendChild(this.element);
     return this.element;
   }
 }
@@ -97,7 +97,7 @@ class HGroupComponent extends Component {
     };
     this.installAttributeSignals(componentAttributes, { override: false });
   }
-  render(parent) {
+  render(parentComponent, parentElement) {
     this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
     this.subscriptions.add(() => this.element.remove()); // destroy element on stop
 
@@ -110,12 +110,12 @@ class HGroupComponent extends Component {
     // Layout children vertically
 
     this.children.forEach((child, index) => {
-      child.render(this.element);
+      child.render(this, this.element);
       child.attributes.left.value = xOffset;
       xOffset += child.attributes.width.value + gap;
     });
 
-    parent.appendChild(this.element);
+    parentElement.appendChild(this.element);
     return this.element;
   }
 

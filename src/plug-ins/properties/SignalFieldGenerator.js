@@ -415,7 +415,7 @@ export class PropertiesForm {
   constructor(app, device, manifest, database, target){
     this.subscriptions = new Set();
 
-    console.log('this.manifest', manifest)
+    //console.log('this.manifest', manifest)
 
     this.app = app;
     this.device = device;
@@ -434,7 +434,7 @@ export class PropertiesForm {
   async spawn(){
 
     const generator = new SignalFieldGenerator();
-    console.log('this.manifest', this)
+    //console.log('this.manifest', this)
     const [elements, signals, unsubscriptions] = generator.generateFields(this.manifest.node.properties);
 
     for(const element of elements){
@@ -463,8 +463,8 @@ export class PropertiesForm {
 
       // When the UI artefact changes value
       fieldSignal.subscribe(value=>{
-        console.log('record.set', record);
-        console.log('record.set', propertyName, value);
+        //console.log('record.set', record);
+        //console.log('record.set', propertyName, value);
         record.set(propertyName, value);
       });
 

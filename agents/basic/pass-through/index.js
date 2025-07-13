@@ -13,7 +13,5 @@ export default class PassThrough extends EventEmitter {
   }
   async stop(){
     console.log('AGENT STOP', this)
-
-
   }
 }

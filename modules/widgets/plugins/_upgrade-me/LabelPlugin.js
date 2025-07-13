@@ -9,7 +9,7 @@ export class LabelComponentPlugin {
 }
 
 class LabelComponent extends BaseComponent {
-    render(parent) {
+    render(parentComponent, parentElement) {
         if (this.element) {
             this.element.remove();
         }
@@ -45,7 +45,7 @@ class LabelComponent extends BaseComponent {
         text.textContent = this.text ? this.text.value : this.attributes.text || this.attributes.label || 'Label';
         this.element.appendChild(text);
 
-        parent.appendChild(this.element);
+        parentElement.appendChild(this.element);
         return this.element;
     }
 }

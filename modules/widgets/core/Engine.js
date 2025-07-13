@@ -80,12 +80,12 @@ export class Engine extends EventEmitter {
       }
 
       const rootElement = xmlDoc.documentElement;
-      console.log("Parsing root element:", rootElement.nodeName);
+      //console.log("Parsing root element:", rootElement.nodeName);
 
       const component = this.createComponentFromXML(rootElement);
 
       this.instances.push(component);
-      component.render(this.componentLayer);
+      component.render(this, this.componentLayer);
       this.layout();
 
       return component;
@@ -97,7 +97,7 @@ export class Engine extends EventEmitter {
 
   createComponentFromXML(xmlElement) {
     const componentName = xmlElement.nodeName;
-    console.log("Creating component:", componentName);
+    //console.log("Creating component:", componentName);
 
     const plugin = this.componentPlugins.get(componentName);
 
@@ -112,7 +112,7 @@ export class Engine extends EventEmitter {
       attributes[attr.name] = this.parseValue(attr.value);
     }
 
-    console.log("EEE Component attributes:", attributes);
+    //console.log("EEE Component attributes:", attributes);
 
     // Create component instance using plugin
     const component = plugin.createComponent(attributes, this);

@@ -23,7 +23,7 @@ export class Component  {
       this.element = null;
 
       this.attributes = {};
-      console.info('EEE', attributes)
+      //console.info('EEE', attributes)
       this.installAttributeSignals(attributes);
 
       this.children = [];
@@ -55,8 +55,8 @@ export class Component  {
     //     }
     // }
 
-    render(parent) {
-        console.warn('Override in subclasses');
+    render(parentComponent, parentElement) {
+        //console.warn('Override in subclasses');
         return null;
     }
 
@@ -77,13 +77,13 @@ export class Component  {
   installAttributeSignals(rawAttributes, {override}={override:true}){
 
     for(const [attributeName, attributeValue] of Object.entries(rawAttributes)){
-      console.info('EEE', {attributeName, attributeValue})
+      //console.info('EEE', {attributeName, attributeValue})
       if(this.attributes[attributeName]){
         // update value
         if(override){
          this.attributes[attributeName].value = attributeValue;
         }else{
-          console.log('EEE Skipped assigning', attributeName, attributeValue)
+          //console.log('EEE Skipped assigning', attributeName, attributeValue)
         }
       }else{
         // add missing signal

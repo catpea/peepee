@@ -22,8 +22,9 @@ export class StationRenderPlugin extends Plugin {
     this.widgetManagerPlugin = app.plugins.get('WidgetManagerPlugin');
     this.widgetEngine = this.widgetManagerPlugin.widgetEngine;
 
-    this.app.on('stationAdded', station => this.renderStation(station) );
-    this.app.on('stationRestored', station => this.renderStation(station) );
+    // this.app.on('stationAdded', station => this.renderStation(station) );
+    // this.app.on('stationRestored', station => this.renderStation(station) );
+
     this.app.on('stationRemoved', id => this.removeStation(id));
 
    this.app.emit('registerTool', {name:'move',  data:{id:'move-tool',  icon:'bi-arrows-move', iconSelected:'bi-arrows-move', description:'move items' }});
@@ -54,28 +55,28 @@ export class StationRenderPlugin extends Plugin {
 
 
   removeStation( id ) {
-    this.app.layers.stations.querySelector(`g.station[data-station-id='${id}']`).remove();
+    this.app.layers.widgets.querySelector(`g.panel[data-station-id='${id}']`).remove();
   }
 
-  renderStation( station ) {
+  // renderStation( station ) {
 
 
 
-    return;
+  //   return;
 
 
 
 
-    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    group.setAttribute("class", "station");
-    group.setAttribute("data-station-id", station.id);
+  //   const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  //   group.setAttribute("class", "station");
+  //   group.setAttribute("data-station-id", station.id);
 
-    // this.renderStationLabel(station);
-    this.renderStationMarker(station, group);
-    // this.renderStationPorts(station, group);
+  //   // this.renderStationLabel(station);
+  //   this.renderStationMarker(station, group);
+  //   // this.renderStationPorts(station, group);
 
-    this.app.layers.stations.appendChild(group);
-  }
+  //   this.app.layers.stations.appendChild(group);
+  // }
 
 
   renderStationLabel(station){

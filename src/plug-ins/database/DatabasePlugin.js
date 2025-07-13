@@ -39,7 +39,7 @@ export class DatabasePlugin extends Plugin {
           eventType: "recordRestored",
           // filter: (record, station) => record.id === station.id,
           filter: (record, station) => {
-            console.log(record, station)
+            //console.log(record, station)
             return record.id === station.id
           },
         },
@@ -75,7 +75,7 @@ export class DatabasePlugin extends Plugin {
 
     // this.app.on("stationAdded", (data) => records.set(data.id, {}));
     this.app.on("stationAdded", (data) => this.app.emit('recordAdd', data) );
-    this.app.on("stationRemoved", (id) => this.app.emit('recordRemove', data));
+    this.app.on("stationRemoved", (id) => this.app.emit('recordRemove', id));
 
 
 
@@ -100,7 +100,7 @@ export class DatabasePlugin extends Plugin {
         {
           eventType: "recordRestored",
             filter: (record, station) => {
-              console.log(record, station)
+              //console.log(record, station)
             return record.id === station.id
           },
         },
@@ -140,7 +140,7 @@ export class DatabasePlugin extends Plugin {
 
 
     this.app.on("connectionAdded", (data) => this.app.emit('recordAdd', data) );
-    this.app.on("connectionRemoved", (id) => this.app.emit('recordRemove', data));
+    this.app.on("connectionRemoved", (id) => this.app.emit('recordRemove', id));
 
 
 
@@ -148,7 +148,7 @@ export class DatabasePlugin extends Plugin {
     const records = new PersistentMap(null, { prefix: "pishposh-records", onRestored: (db) => db.forEach((v, k) => this.app.emit("recordRestore", v)) });
     this.records = records;
     this.app.on("recordAdded",   (data) => this.records.set(data.id, data.serialize()));
-    this.app.on("recordAdded",   (data) => console.log('recordAdded this.records.set', data.id, data.serialize()) );
+    //this.app.on("recordAdded",   (data) => console.log('recordAdded this.records.set', data.id, data.serialize()) );
     this.app.on("recordUpdated", (data) => this.records.set(data.id, data.serialize()));
     this.app.on("recordRemoved", (id) => this.records.delete(id));
 

@@ -18,7 +18,7 @@ class PortComponent extends Component {
     const componentAttributes = {
       caption: "Port",
 
-      offset: 16,
+      offset: 10,
       type: 'input',
 
       left: 0,
@@ -39,7 +39,10 @@ class PortComponent extends Component {
       captionTextX: 0,
       captionTextY: 0,
       portSocketY:0,
+      portSocketX: null,
       portCaptionWidth: null,
+      portSocketXCTM:0,
+      portSocketYCTM:0,
     };
 
     this.installAttributeSignals(componentAttributes, { override: false });
@@ -47,7 +50,7 @@ class PortComponent extends Component {
 
   }
 
-  render(parent) {
+  render(parentComponent, parentElement) {
 
     this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
     this.element.setAttribute("id", this.id);
@@ -57,9 +60,11 @@ class PortComponent extends Component {
     this.subscriptions.add(() => this.element.remove()); // destroy element on stop
     this.listenToAttributeSignals(["left", "top"], (left, top) => this.element.setAttribute("transform", `translate(${left}, ${top})`));
 
-    const positionX = parent.width
-      .combineLatest( this.attributes.offset, this.attributes.type )
-      .map((parentWidth, offset, type)=>type=='input'?0-offset:parentWidth+offset);
+    // const positionX = parentComponent.attributes.width
+    //   ?.combineLatest( this.attributes.offset, this.attributes.type )
+    //   .map((parentWidth, offset, type)=>type=='input'?0-offset:parentWidth+offset);
+    // positionX?.subscribe(x=>console.info('XXX positionX', x))
+
 
 
     // Port background
@@ -72,10 +77,15 @@ class PortComponent extends Component {
 
     // Port Socket
     const portSocket = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    this.portSocket = portSocket;
     this.subscriptions.add(() => portSocket.remove()); // destroy element on stop
+
+    this.attributes.portSocketX = this.attributes.width.combineLatest(this.attributes.offset,this.attributes.type).map(([width, offset, type])=>type=='input'?0-offset:width+offset);
+
     portSocket.classList.add('port-socket');
     portSocket.classList.add('station-port');
     this.setAttributeSignal(portSocket, "cy", "portSocketY");
+    this.setAttributeSignal(portSocket, "cx", "portSocketX");
     this.listenToAttributeSignals(["socketRadius", "height"], ( socketRadius, height ) => this.attributes.portSocketY.value =  height/2 );
     this.setAttributeSignal(portSocket, "r", "socketRadius");
 
@@ -89,6 +99,26 @@ class PortComponent extends Component {
 
     this.element.appendChild(portSocket);
 
+      // .map(( [parentWidth, offset, type] ) => ({ parentWidth, offset, type }) );
+      // positionX?.subscribe(x=>console.info('XXX positionX', x))
+
+
+
+
+      // const { e: x, f: y } = port.portElement.getCTM();
+      // const point = this.engine.clientToWorld(x, y);
+      // port.x.value = point.x;
+      // port.y.value = point.y + 8;
+
+
+
+    //   this.attributes.portSocketX.combineLatest(this.attributes.portSocketY).subscribe(()=>{
+    //     // when values change
+    //     const { e: x, f: y } = portSocket.getCTM();
+    //     this.attributes.portSocketXCTM.value = x;
+    //     this.attributes.portSocketYCTM.value = y;
+
+    //   })
 
 
 
@@ -110,7 +140,9 @@ class PortComponent extends Component {
     // Measure the width of the port caption and update the component's width attribute
     // WARNING: portCaptionWidth is a ResizeObserver in a Signal API: new Resizable(portCaption);
     // when element resizes, this function will run, and it resizez when it is inserted into dom or text changes
-    this.listenToAttributeSignals(['caption', 'gap', 'portCaptionWidth'], (caption, gap, {width}) => this.attributes.width.value = gap + width + gap);
+    // this.listenToAttributeSignals(['caption', 'gap', 'portCaptionWidth'], (caption, gap, {width}) => this.attributes.width.value = gap + width + gap);
+
+
 
     // Add hover effects
     this.element.addEventListener("mouseenter", () => {
@@ -129,7 +161,7 @@ class PortComponent extends Component {
         portBg.classList.remove('active');
     });
 
-    parent.appendChild(this.element);
+    parentElement.appendChild(this.element);
     return this.element;
   }
 }

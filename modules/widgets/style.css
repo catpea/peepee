@@ -2,7 +2,7 @@
       :root {
 
         --elevated-color:   color-mix(in srgb, var(--base02) 70%, var(--cyan) 30%);
-        --surface-color:  color-mix(in srgb, var(--base02) 90%, var(--cyan) 10%);
+        --surface-color:  color-mix(in srgb, #07364282 90%, var(--cyan) 10%);
         --subtle-color: color-mix(in srgb, var(--base02) 85%, var(--cyan) 15%);
       }
 

@@ -2,11 +2,11 @@ import { BaseComponent } from '../core/BaseComponent.js';
 
 export class MyComponentComponentPlugin {
     start() {
-        console.log('MyComponent plugin started');
+        //console.log('MyComponent plugin started');
     }
 
     stop() {
-        console.log('MyComponent plugin stopped');
+        //console.log('MyComponent plugin stopped');
     }
 
     createComponent(attributes, engine) {
@@ -15,7 +15,7 @@ export class MyComponentComponentPlugin {
 }
 
 class MyComponentComponent extends BaseComponent {
-    render(parent) {
+    render(parentComponent, parentElement) {
         if (this.element) {
             this.element.remove();
         }
@@ -30,7 +30,7 @@ class MyComponentComponent extends BaseComponent {
         // rect.setAttribute('height', this.height?.value || 10);
         // this.element.appendChild(rect);
 
-        parent.appendChild(this.element);
+        parentElement.appendChild(this.element);
         return this.element;
     }
 }

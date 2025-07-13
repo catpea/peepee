@@ -49,7 +49,7 @@ export class EventEmitter {
     }
     return new Promise((resolve) => {
       const off = this.on(eventName, (data) => {
-        console.log("UNTIL", data);
+        //console.log("UNTIL", data);
         if (data.id == id) {
           off();
           resolve(data);

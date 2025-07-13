@@ -64,7 +64,7 @@ svg[data-tool="zoom-out-tool"] {
 
 .svg-container {
   flex: 1;
-  border: 2px solid var(--base02);
+  border: 0; /* CTP HAS PROBLEMS WITH BORDERS */
   overflow: hidden;
   background-color: var(--background);
 }

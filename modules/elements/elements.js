@@ -31,7 +31,7 @@ export class Resizable {
 
         // Check if element is connected to DOM
         if (!element.isConnected) {
-            console.warn('Element is not connected to the DOM. Size observation may not work as expected.');
+            //console.warn('Element is not connected to the DOM. Size observation may not work as expected.');
         }
 
         this.element = element;
