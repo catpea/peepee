@@ -1,11 +1,11 @@
 import { Signal } from "signals";
 import { EventEmitter } from "events";
-import { BaseComponent } from "./BaseComponent.js";
+import { Component } from "./Component.js";
 
 /**
  * Main Widget Engine class
  */
-export class WidgetEngine extends EventEmitter {
+export class Engine extends EventEmitter {
   constructor(svgElement) {
     super();
     this.svg = svgElement;
@@ -14,8 +14,8 @@ export class WidgetEngine extends EventEmitter {
     this.defs = svgElement.querySelector("defs");
 
     // Reactive signals
-    this.containerWidth = new Signal(BaseComponent.ContainerWidth);
-    this.containerHeight = new Signal(BaseComponent.ContainerHeight);
+    this.containerWidth = new Signal(Component.ContainerWidth);
+    this.containerHeight = new Signal(Component.ContainerHeight);
     this.scale = new Signal(1);
 
     // Plugin system
@@ -187,4 +187,21 @@ export class WidgetEngine extends EventEmitter {
       return null;
     }
   }
+
+  loadStyleSheet(url) {
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Failed to load CSS: ${response.statusText}`);
+        return response.text();
+      })
+      .then((cssText) => {
+        const style = document.createElement("style");
+        style.textContent = cssText;
+        document.head.appendChild(style);
+      })
+      .catch((error) => {
+        console.error("Error loading stylesheet:", error);
+      });
+  }
+
 }

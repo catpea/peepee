@@ -3,7 +3,7 @@ import { Signal } from 'signals';
 /**
  * Base class for all components
  */
-export class BaseComponent  {
+export class Component  {
 
   // Constants
   static ElementWidth = 128;

@@ -1,4 +1,4 @@
-import { BaseComponent } from "../core/BaseComponent.js";
+import { Component } from "../core/Component.js";
 
 // Group Component Plugin
 export class GroupComponentPlugin {
@@ -9,7 +9,7 @@ export class GroupComponentPlugin {
   }
 }
 
-class GroupComponent extends BaseComponent {
+class GroupComponent extends Component {
   constructor(...a) {
     super(...a);
     const componentAttributes = {
@@ -48,7 +48,7 @@ export class VGroupComponentPlugin {
   }
 }
 
-class VGroupComponent extends BaseComponent {
+class VGroupComponent extends Component {
   constructor(...a) {
     super(...a);
     const componentAttributes = {
@@ -89,7 +89,7 @@ export class HGroupComponentPlugin {
   }
 }
 
-class HGroupComponent extends BaseComponent {
+class HGroupComponent extends Component {
   constructor(...a) {
     super(...a);
     const componentAttributes = {
@@ -134,7 +134,7 @@ class HGroupComponent extends BaseComponent {
   //         child.render(childGroup);
   //         this.element.appendChild(childGroup);
   //         // Calculate next position
-  //         const childWidth = child.width ? child.width.value : BaseComponent.ElementWidth;
+  //         const childWidth = child.width ? child.width.value : Component.ElementWidth;
   //         xOffset += childWidth + gap;
   //     });
   //     parent.appendChild(this.element);
@@ -151,6 +151,6 @@ class HGroupComponent extends BaseComponent {
 //     this.element.appendChild(childGroup);
 
 //     // Calculate next position
-//     const childHeight = child.height ? child.height.value : BaseComponent.ElementHeight;
+//     const childHeight = child.height ? child.height.value : Component.ElementHeight;
 //     yOffset += childHeight + gap;
 // });

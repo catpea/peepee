@@ -1,4 +1,4 @@
-import { BaseComponent } from '../core/BaseComponent.js';
+import { Component } from '../core/Component.js';
 import { Signal } from 'signals';
 
 export class PanelComponentPlugin {
@@ -17,7 +17,7 @@ export class PanelComponentPlugin {
 
 }
 
-class PanelComponent extends BaseComponent {
+class PanelComponent extends Component {
 
 
 

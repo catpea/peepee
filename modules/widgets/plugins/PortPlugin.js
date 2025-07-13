@@ -1,7 +1,7 @@
 import { Signal } from "signals";
 import { Resizable } from "elements";
 
-import { BaseComponent } from "../core/BaseComponent.js";
+import { Component } from "../core/Component.js";
 
 export class PortComponentPlugin {
   start() {}
@@ -11,14 +11,17 @@ export class PortComponentPlugin {
   }
 }
 
-class PortComponent extends BaseComponent {
+class PortComponent extends Component {
   constructor(...a) {
     super(...a);
 
     const componentAttributes = {
       caption: "Port",
 
-      left: -16,
+      offset: 16,
+      type: 'input',
+
+      left: 0,
       top: 0,
 
       width: 16,
@@ -53,6 +56,11 @@ class PortComponent extends BaseComponent {
     // Apply positioning from left, right, top, bottom attributes
     this.subscriptions.add(() => this.element.remove()); // destroy element on stop
     this.listenToAttributeSignals(["left", "top"], (left, top) => this.element.setAttribute("transform", `translate(${left}, ${top})`));
+
+    const positionX = parent.width
+      .combineLatest( this.attributes.offset, this.attributes.type )
+      .map((parentWidth, offset, type)=>type=='input'?0-offset:parentWidth+offset);
+
 
     // Port background
     const portBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");

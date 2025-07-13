@@ -1,7 +1,7 @@
 import { Signal } from "signals";
 import { Resizable } from "elements";
 
-import { BaseComponent } from "../core/BaseComponent.js";
+import { Component } from "../core/Component.js";
 
 export class ButtonComponentPlugin {
   start() {}
@@ -11,7 +11,7 @@ export class ButtonComponentPlugin {
   }
 }
 
-class ButtonComponent extends BaseComponent {
+class ButtonComponent extends Component {
   constructor(...a) {
     super(...a);
 

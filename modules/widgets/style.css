@@ -1,0 +1,92 @@
+
+      :root {
+
+        --elevated-color:   color-mix(in srgb, var(--base02) 70%, var(--cyan) 30%);
+        --surface-color:  color-mix(in srgb, var(--base02) 90%, var(--cyan) 10%);
+        --subtle-color: color-mix(in srgb, var(--base02) 85%, var(--cyan) 15%);
+      }
+
+      /*
+      [data-theme="dark"] {
+        --primary-color: #3b82f6;
+        --secondary-color: #94a3b8;
+        --surface-color: #1e293b;
+        --text-color: #f1f5f9;
+        --border-color: #334155;
+      }
+      */
+
+
+      .port {
+
+      .port-bg {
+          fill: var(--surface-color);
+          stroke: var(--base02);
+        }
+
+      .port-socket {
+          fill: var(--cyan);
+          stroke: var(--base1);
+          stroke-width: 1px;
+        }
+
+        .port-caption {
+          user-select: none;
+          fill: var(--base01);
+        }
+      }
+
+      .button {
+        cursor: pointer;
+
+
+        .button-caption {
+          user-select: none;
+          fill: var(--base01);
+        }
+
+        .button-bg {
+          fill: var(--base03);
+          stroke: var(--base02);
+
+          &.hover {
+            fill: color-mix(in srgb, var(--base02) 99%, var(--cyan) 1%);
+          }
+
+          &.active {
+            fill: color-mix(in srgb, var(--base02) 95%, var(--violet) 5%);
+          }
+
+        }
+
+
+      }
+
+      .panel {
+          stroke-width: 0;
+
+        .panel-bg {
+          fill: var(--surface-color);
+        }
+
+        .panel-title-bg {
+          fill: var(--subtle-color)
+        }
+
+        .panel-icon-bg {
+
+          fill: var(--elevated-color);
+        }
+
+        .panel-icon {
+          fill: var(--text);
+        }
+
+        .panel-caption {
+          user-select: none;
+          fill: var(--text);
+          font-weight: 600;
+        }
+
+
+      }

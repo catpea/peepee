@@ -409,7 +409,17 @@ export class PanZoomEngine {
 }
 
 
+  placeCircleOnCircumference(angle, circleX, circleY, circleRadius) {
+    // Convert the start angle from degrees to radians
+    const angleInRadians = angle * (Math.PI / 180);
 
+    // Calculate the x and y coordinates of the point on the circumference
+    const x = circleX + circleRadius * Math.cos(angleInRadians);
+    const y = circleY + circleRadius * Math.sin(angleInRadians);
+
+    // Return the coordinates as an object for destructuring
+    return { x, y };
+  }
 
 
 
