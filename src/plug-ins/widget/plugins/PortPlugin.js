@@ -65,18 +65,20 @@ class PortComponent extends BaseComponent {
     // Port Socket
     const portSocket = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     this.subscriptions.add(() => portSocket.remove()); // destroy element on stop
-
     portSocket.classList.add('port-socket');
     portSocket.classList.add('station-port');
-
-    // this.setAttributeSignal(portSocket, "cx", "left");
     this.setAttributeSignal(portSocket, "cy", "portSocketY");
-
-    this.listenToAttributeSignals(["socketRadius", "height"], ( socketRadius, height ) =>
-       this.attributes.portSocketY.value =  height/2
-    );
-
+    this.listenToAttributeSignals(["socketRadius", "height"], ( socketRadius, height ) => this.attributes.portSocketY.value =  height/2 );
     this.setAttributeSignal(portSocket, "r", "socketRadius");
+
+    portSocket.setAttribute("data-port-id", [this.attributes.group, this.attributes.type, this.attributes.id].join(':'));
+    portSocket.setAttribute("data-port-name", [this.attributes.type, this.attributes.id].join(':'));
+    portSocket.setAttribute("data-station-id", this.attributes.group);
+
+    this.listenToAttributeSignals([ "id" ], ( id ) => portSocket.setAttribute("data-port-id", id ));
+    this.listenToAttributeSignals([ "type", "id" ], ( type, id ) => portSocket.setAttribute("data-port-name", [ type, id ].join(':')));
+    this.listenToAttributeSignals([ "group" ], ( group ) => portSocket.setAttribute("data-station-id", group ));
+
     this.element.appendChild(portSocket);
 
 

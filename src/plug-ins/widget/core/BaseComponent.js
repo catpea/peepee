@@ -13,7 +13,8 @@ export class BaseComponent  {
   static ContainerHeight = 200;
 
     constructor(attributes = {}, engine) {
-      this.id = 'comp-' + Math.random().toString(36).substr(2, 9);
+
+      this.id = attributes.id??'comp-' + Math.random().toString(36).substr(2, 9);
 
       this.engine = engine;
 

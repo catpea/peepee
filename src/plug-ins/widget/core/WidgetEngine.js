@@ -25,6 +25,7 @@ export class WidgetEngine extends EventEmitter {
 
     // Component instances
     this.instances = [];
+    this.registry = new Map();
 
     // Subscribe to container changes
     this.containerWidth.subscribe(() => this.layout());
@@ -115,6 +116,7 @@ export class WidgetEngine extends EventEmitter {
 
     // Create component instance using plugin
     const component = plugin.createComponent(attributes, this);
+    if(component.id) this.registry.set(component.id, component)
 
     // Process children
     for (let child of xmlElement.children) {

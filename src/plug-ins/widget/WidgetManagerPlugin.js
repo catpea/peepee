@@ -79,6 +79,7 @@ export class WidgetManagerPlugin extends Plugin {
         }
 
         .port-caption {
+          user-select: none;
           fill: var(--base01);
         }
       }
@@ -88,6 +89,7 @@ export class WidgetManagerPlugin extends Plugin {
 
 
         .button-caption {
+          user-select: none;
           fill: var(--base01);
         }
 
@@ -129,6 +131,7 @@ export class WidgetManagerPlugin extends Plugin {
         }
 
         .panel-caption {
+          user-select: none;
           fill: var(--text);
           font-weight: 600;
         }

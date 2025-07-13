@@ -32,6 +32,7 @@ export class ConnectionCreatePlugin extends Plugin {
   async connectionAdd(raw) {
     const connection = new Connection(raw);
     this.connectionInstances.set(connection.id, connection);
+    console.warn("connectionAdded", connection.serialize());
     this.eventDispatch("connectionAdded", connection);
     return connection;
   }
