@@ -1,3 +1,14 @@
+export function id() {
+  const alphabet = 'abcdefghijklmnop'; // 16 characters (base16)
+  let id = '';
+  for (let i = 0; i < 32; i++) {
+    // Generate a random number between 0 and 15
+    const randomIndex = Math.floor(Math.random() * 16);
+    id += alphabet[randomIndex];
+  }
+  return id;
+}
+
 /**
  * Modern Resizable class that observes element size changes using ResizeObserver
  * Supports multiple subscribers and provides comprehensive error handling

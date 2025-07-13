@@ -1,4 +1,5 @@
-import { rid, ReactiveSignal as Signal, namedCombineLatest, fromEvent } from "../../../core/Signal.js";
+import { Signal } from 'signals';
+import { id } from 'elements';
 
 export class Connection {
 
@@ -55,7 +56,7 @@ export class Connection {
 
     //console.log('DDD', options)
 
-    this.#signalStorage.id = new Signal(options.id??rid());
+    this.#signalStorage.id = new Signal(options.id??id());
 
     this.#signalStorage.toId = new Signal(options.toId);
     this.#signalStorage.toPortId = new Signal(options.toPortId);

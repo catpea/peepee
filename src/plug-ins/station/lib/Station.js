@@ -1,5 +1,6 @@
 // import { rid, ReactiveSignal as Signal, namedCombineLatest, fromEvent } from "../../../core/Signal.js";
 import { Signal } from 'signals';
+import { id } from 'elements';
 
 export class Station {
 
@@ -34,7 +35,7 @@ export class Station {
   // reusable creator used by deserializer and constructor
   setup(options){
 
-    this.#signalStorage.id = new Signal(options.id??rid());
+    this.#signalStorage.id = new Signal(options.id??id());
     this.#signalStorage.agentType = new Signal(options.agentType);
     this.#signalStorage.label = new Signal(options.label);
 
