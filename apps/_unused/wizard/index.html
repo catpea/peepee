@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Wizard Form</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h2 class="text-center mb-4">Configuration Wizard</h2>
+                <div id="wizardForm"></div>
+                <div class="mt-4 text-center">
+                    <button type="button" class="btn btn-primary me-2" onclick="submitForm()">Submit</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                </div>
+                <div class="mt-4">
+                    <h5>Form Data:</h5>
+                    <pre id="formData" class="bg-dark text-light p-3 rounded"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form configuration
+        const form = [
+            [
+                {
+                    "name": "startLabel",
+                    "type": "text",
+                    "label": "Start Label",
+                    "description": "A label that describes the starting point of the connection.",
+                    "value": ""
+                },
+                {
+                    "name": "centerLabel",
+                    "type": "text",
+                    "label": "Center Label",
+                    "description": "A label that represents the connection itself, typically displayed in the center.",
+                    "value": ""
+                },
+                {
+                    "name": "endLabel",
+                    "type": "text",
+                    "label": "End Label",
+                    "description": "A label that describes the endpoint of the connection.",
+                    "value": ""
+                }
+            ],
+            [
+                {
+                    "name": "color",
+                    "type": "color",
+                    "label": "Line Color",
+                    "description": "The color of the line representing the connection, used for visual distinction.",
+                    "value": "#ff6600"
+                },
+                {
+                    "name": "thickness",
+                    "type": "range",
+                    "label": "Line Thickness",
+                    "description": "The thickness of the connection line in pixels.",
+                    "value": "3",
+                    "min": "1",
+                    "max": "10",
+                    "step": "1"
+                }
+            ],
+            [
+                {
+                    "name": "email",
+                    "type": "email",
+                    "label": "Email Address",
+                    "description": "Your email address for notifications.",
+                    "value": "",
+                    "required": true
+                },
+                {
+                    "name": "password",
+                    "type": "password",
+                    "label": "Password",
+                    "description": "Enter a secure password.",
+                    "value": ""
+                },
+                {
+                    "name": "website",
+                    "type": "url",
+                    "label": "Website",
+                    "description": "Your website URL.",
+                    "value": ""
+                },
+                {
+                    "name": "phone",
+                    "type": "tel",
+                    "label": "Phone Number",
+                    "description": "Your contact phone number.",
+                    "value": ""
+                }
+            ],
+            [
+                {
+                    "name": "birthdate",
+                    "type": "date",
+                    "label": "Birth Date",
+                    "description": "Your date of birth.",
+                    "value": ""
+                },
+                {
+                    "name": "appointment",
+                    "type": "datetime-local",
+                    "label": "Appointment",
+                    "description": "Schedule an appointment.",
+                    "value": ""
+                },
+                {
+                    "name": "priority",
+                    "type": "number",
+                    "label": "Priority",
+                    "description": "Set priority level (1-100).",
+                    "value": "50",
+                    "min": "1",
+                    "max": "100"
+                }
+            ],
+            [
+                {
+                    "name": "category",
+                    "type": "select",
+                    "label": "Category",
+                    "description": "Select a category.",
+                    "value": "",
+                    "options": [
+                        {"value": "", "text": "Choose..."},
+                        {"value": "business", "text": "Business"},
+                        {"value": "personal", "text": "Personal"},
+                        {"value": "other", "text": "Other"}
+                    ]
+                },
+                {
+                    "name": "skills",
+                    "type": "select",
+                    "label": "Skills",
+                    "description": "Select your skills (multiple).",
+                    "value": "",
+                    "multiple": true,
+                    "options": [
+                        {"value": "javascript", "text": "JavaScript"},
+                        {"value": "python", "text": "Python"},
+                        {"value": "java", "text": "Java"},
+                        {"value": "csharp", "text": "C#"}
+                    ]
+                },
+                {
+                    "name": "comments",
+                    "type": "textarea",
+                    "label": "Comments",
+                    "description": "Additional comments or notes.",
+                    "value": "",
+                    "rows": "4"
+                }
+            ],
+            [
+                {
+                    "name": "newsletter",
+                    "type": "checkbox",
+                    "label": "Subscribe to Newsletter",
+                    "description": "Receive updates and news via email.",
+                    "value": false
+                },
+                {
+                    "name": "gender",
+                    "type": "radio",
+                    "label": "Gender",
+                    "description": "Select your gender.",
+                    "value": "",
+                    "options": [
+                        {"value": "male", "text": "Male"},
+                        {"value": "female", "text": "Female"},
+                        {"value": "other", "text": "Other"}
+                    ]
+                },
+                {
+                    "name": "avatar",
+                    "type": "file",
+                    "label": "Avatar",
+                    "description": "Upload your profile picture.",
+                    "value": ""
+                }
+            ]
+        ];
+
+        // Form data object
+        let formData = {};
+
+        // Initialize form data
+        function initFormData() {
+            form.forEach(pane => {
+                pane.forEach(field => {
+                    if (field.type === 'checkbox') {
+                        formData[field.name] = field.value || false;
+                    } else {
+                        formData[field.name] = field.value || '';
+                    }
+                });
+            });
+            updateFormDataDisplay();
+        }
+
+        // Update form data display
+        function updateFormDataDisplay() {
+            document.getElementById('formData').textContent = JSON.stringify(formData, null, 2);
+        }
+
+        // Text input
+        function createTextInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.placeholder) input.placeholder = config.placeholder;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Email input
+        function createEmailInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'email';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.placeholder) input.placeholder = config.placeholder;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Password input
+        function createPasswordInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'password';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.placeholder) input.placeholder = config.placeholder;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Number input
+        function createNumberInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.min) input.min = config.min;
+            if (config.max) input.max = config.max;
+            if (config.step) input.step = config.step;
+            if (config.placeholder) input.placeholder = config.placeholder;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Tel input
+        function createTelInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'tel';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.placeholder) input.placeholder = config.placeholder;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // URL input
+        function createUrlInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'url';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.placeholder) input.placeholder = config.placeholder;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Search input
+        function createSearchInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'search';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.placeholder) input.placeholder = config.placeholder;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Color input
+        function createColorInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'color';
+            input.className = 'form-control form-control-color';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '#000000';
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Date input
+        function createDateInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'date';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.min) input.min = config.min;
+            if (config.max) input.max = config.max;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Datetime-local input
+        function createDatetimeLocalInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'datetime-local';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.min) input.min = config.min;
+            if (config.max) input.max = config.max;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Month input
+        function createMonthInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'month';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.min) input.min = config.min;
+            if (config.max) input.max = config.max;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Time input
+        function createTimeInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'time';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.min) input.min = config.min;
+            if (config.max) input.max = config.max;
+            if (config.step) input.step = config.step;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Week input
+        function createWeekInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'week';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.min) input.min = config.min;
+            if (config.max) input.max = config.max;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Range input
+        function createRangeInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'range';
+            input.className = 'form-range';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '50';
+            if (config.min) input.min = config.min;
+            if (config.max) input.max = config.max;
+            if (config.step) input.step = config.step;
+
+            const valueDisplay = document.createElement('div');
+            valueDisplay.className = 'form-text';
+            valueDisplay.textContent = `Value: ${input.value}`;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                valueDisplay.textContent = `Value: ${e.target.value}`;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            wrapper.appendChild(valueDisplay);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // File input
+        function createFileInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            if (config.multiple) input.multiple = true;
+            if (config.accept) input.accept = config.accept;
+            if (config.required) input.required = true;
+
+            input.addEventListener('change', (e) => {
+                formData[config.name] = e.target.files.length > 0 ? e.target.files[0].name : '';
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Checkbox input
+        function createCheckboxInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const checkWrapper = document.createElement('div');
+            checkWrapper.className = 'form-check';
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.className = 'form-check-input';
+            input.id = config.name;
+            input.name = config.name;
+            input.checked = config.value || false;
+            if (config.required) input.required = true;
+
+            const label = document.createElement('label');
+            label.className = 'form-check-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            input.addEventListener('change', (e) => {
+                formData[config.name] = e.target.checked;
+                updateFormDataDisplay();
+            });
+
+            checkWrapper.appendChild(input);
+            checkWrapper.appendChild(label);
+            wrapper.appendChild(checkWrapper);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Radio input
+        function createRadioInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('div');
+            label.className = 'form-label';
+            label.textContent = config.label;
+            wrapper.appendChild(label);
+
+            config.options.forEach(option => {
+                const radioWrapper = document.createElement('div');
+                radioWrapper.className = 'form-check';
+
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.className = 'form-check-input';
+                input.id = `${config.name}_${option.value}`;
+                input.name = config.name;
+                input.value = option.value;
+                input.checked = config.value === option.value;
+                if (config.required) input.required = true;
+
+                const radioLabel = document.createElement('label');
+                radioLabel.className = 'form-check-label';
+                radioLabel.setAttribute('for', `${config.name}_${option.value}`);
+                radioLabel.textContent = option.text;
+
+                input.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        formData[config.name] = e.target.value;
+                        updateFormDataDisplay();
+                    }
+                });
+
+                radioWrapper.appendChild(input);
+                radioWrapper.appendChild(radioLabel);
+                wrapper.appendChild(radioWrapper);
+            });
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Hidden input
+        function createHiddenInput(config) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            return input;
+        }
+
+        // Textarea
+        function createTextarea(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const textarea = document.createElement('textarea');
+            textarea.className = 'form-control';
+            textarea.id = config.name;
+            textarea.name = config.name;
+            textarea.value = config.value || '';
+            if (config.rows) textarea.rows = config.rows;
+            if (config.cols) textarea.cols = config.cols;
+            if (config.placeholder) textarea.placeholder = config.placeholder;
+            if (config.required) textarea.required = true;
+
+            textarea.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(textarea);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Select
+        function createSelect(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const select = document.createElement('select');
+            select.className = 'form-select';
+            select.id = config.name;
+            select.name = config.name;
+            if (config.multiple) {
+                select.multiple = true;
+                select.className = 'form-select';
+            }
+            if (config.required) select.required = true;
+
+            config.options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+                if (config.value === option.value) optionElement.selected = true;
+                select.appendChild(optionElement);
+            });
+
+            select.addEventListener('change', (e) => {
+                if (config.multiple) {
+                    const selectedOptions = Array.from(e.target.selectedOptions).map(opt => opt.value);
+                    formData[config.name] = selectedOptions;
+                } else {
+                    formData[config.name] = e.target.value;
+                }
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(select);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Bootstrap element
+        function createBootstrapElement(config) {
+            const element = document.createElement(config.tagName);
+            if (config.id) element.id = config.id;
+            if (config.class) element.className = config.class;
+            if (config.innerText) element.innerText = config.innerText;
+            if (config.innerHTML) element.innerHTML = config.innerHTML;
+            return element;
+        }
+
+        // Create form field
+        function createFormField(config) {
+            switch (config.type) {
+                case 'text':
+                    return createTextInput(config);
+                case 'email':
+                    return createEmailInput(config);
+                case 'password':
+                    return createPasswordInput(config);
+                case 'number':
+                    return createNumberInput(config);
+                case 'tel':
+                    return createTelInput(config);
+                case 'url':
+                    return createUrlInput(config);
+                case 'search':
+                    return createSearchInput(config);
+                case 'color':
+                    return createColorInput(config);
+                case 'date':
+                    return createDateInput(config);
+                case 'datetime-local':
+                    return createDatetimeLocalInput(config);
+                case 'month':
+                    return createMonthInput(config);
+                case 'time':
+                    return createTimeInput(config);
+                case 'week':
+                    return createWeekInput(config);
+                case 'range':
+                    return createRangeInput(config);
+                case 'file':
+                    return createFileInput(config);
+                case 'checkbox':
+                    return createCheckboxInput(config);
+                case 'radio':
+                    return createRadioInput(config);
+                case 'hidden':
+                    return createHiddenInput(config);
+                case 'textarea':
+                    return createTextarea(config);
+                case 'select':
+                    return createSelect(config);
+                default:
+                    if (config.tagName) {
+                        return createBootstrapElement(config);
+                    }
+                    return createTextInput(config);
+            }
+        }
+
+        // Create accordion
+        function createAccordion() {
+            const accordion = document.createElement('div');
+            accordion.className = 'accordion';
+            accordion.id = 'wizardAccordion';
+
+            form.forEach((pane, paneIndex) => {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'accordion-item';
+
+                const accordionHeader = document.createElement('h2');
+                accordionHeader.className = 'accordion-header';
+
+                const accordionButton = document.createElement('button');
+                accordionButton.className = 'accordion-button';
+                accordionButton.type = 'button';
+                accordionButton.setAttribute('data-bs-toggle', 'collapse');
+                accordionButton.setAttribute('data-bs-target', `#collapse${paneIndex}`);
+                accordionButton.setAttribute('aria-expanded', paneIndex === 0 ? 'true' : 'false');
+                accordionButton.setAttribute('aria-controls', `collapse${paneIndex}`);
+                accordionButton.textContent = `Step ${paneIndex + 1}`;
+
+                if (paneIndex !== 0) {
+                    accordionButton.classList.add('collapsed');
+                }
+
+                accordionHeader.appendChild(accordionButton);
+
+                const accordionCollapse = document.createElement('div');
+                accordionCollapse.id = `collapse${paneIndex}`;
+                accordionCollapse.className = paneIndex === 0 ? 'accordion-collapse collapse show' : 'accordion-collapse collapse';
+                accordionCollapse.setAttribute('data-bs-parent', '#wizardAccordion');
+
+                const accordionBody = document.createElement('div');
+                accordionBody.className = 'accordion-body';
+
+                pane.forEach(fieldConfig => {
+                    const fieldElement = createFormField(fieldConfig);
+                    accordionBody.appendChild(fieldElement);
+                });
+
+                accordionCollapse.appendChild(accordionBody);
+                accordionItem.appendChild(accordionHeader);
+                accordionItem.appendChild(accordionCollapse);
+                accordion.appendChild(accordionItem);
+            });
+
+            return accordion;
+        }
+
+        // Initialize form
+        function initForm() {
+            initFormData();
+            const formContainer = document.getElementById('wizardForm');
+            const accordion = createAccordion();
+            formContainer.appendChild(accordion);
+        }
+
+        // Submit form
+        function submitForm() {
+            alert('Form submitted! Check the console for form data.');
+            console.log('Form Data:', formData);
+        }
+
+        // Reset form
+        function resetForm() {
+            initFormData();
+            document.getElementById('wizardForm').innerHTML = '';
+            initForm();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initForm);
+    </script>
+</body>
+</html>

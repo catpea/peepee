@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Programming Node Designer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <h2 class="text-center mb-4">🎯 Visual Programming Node Designer</h2>
+                <p class="text-center text-muted mb-4">Define your custom node with BDD-style tests. AI will generate the EventEmitter and manifest.json</p>
+
+                <div id="wizardForm"></div>
+
+                <div class="mt-4 text-center">
+                    <button type="button" class="btn btn-primary btn-lg me-3" onclick="generatePrompt()">
+                        🤖 Generate AI Prompt
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                        🔄 Reset Form
+                    </button>
+                </div>
+
+                <div class="mt-5" id="promptOutput" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">🎯 AI Prompt for Node Generation</h5>
+                        </div>
+                        <div class="card-body">
+                            <pre id="generatedPrompt" class="bg-dark text-light p-3 rounded" style="white-space: pre-wrap;"></pre>
+                            <button type="button" class="btn btn-outline-primary mt-2" onclick="copyPrompt()">
+                                📋 Copy to Clipboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <details>
+                        <summary class="btn btn-outline-info">📊 View Form Data</summary>
+                        <pre id="formData" class="bg-dark text-light p-3 rounded mt-2"></pre>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form configuration for Visual Programming Node Designer
+        const form = [
+            [
+                // Basic Node Information
+                {
+                    "name": "nodeTitle",
+                    "type": "text",
+                    "label": "Node Title",
+                    "description": "A clear, explicit title for your visual programming node (e.g., 'Text Transformer', 'Data Filter', 'HTTP Request')",
+                    "value": "",
+                    "required": true,
+                    "placeholder": "My Custom Node"
+                },
+                {
+                    "name": "nodeType",
+                    "type": "select",
+                    "label": "Node Type",
+                    "description": "Select the type of node based on its data flow role",
+                    "value": "",
+                    "required": true,
+                    "options": [
+                        {"value": "", "text": "Choose node type..."},
+                        {"value": "PRODUCER", "text": "PRODUCER - Generates data (sources)"},
+                        {"value": "TRANSDUCER", "text": "TRANSDUCER - Transforms data (processors)"},
+                        {"value": "REDUCER", "text": "REDUCER - Consumes data (sinks)"}
+                    ]
+                }
+            ],
+            [
+                // BDD Narrative Section
+                {
+                    "name": "userRole",
+                    "type": "text",
+                    "label": "As a...",
+                    "description": "The person or role who will benefit from this node feature",
+                    "value": "",
+                    "required": true,
+                    "placeholder": "developer, data analyst, content creator"
+                },
+                {
+                    "name": "userWant",
+                    "type": "textarea",
+                    "label": "I want...",
+                    "description": "The feature or capability this node should provide",
+                    "value": "",
+                    "required": true,
+                    "rows": "2",
+                    "placeholder": "to transform text data, to filter arrays, to fetch web content"
+                },
+                {
+                    "name": "userBenefit",
+                    "type": "textarea",
+                    "label": "So that...",
+                    "description": "The benefit or value this node will provide",
+                    "value": "",
+                    "required": true,
+                    "rows": "2",
+                    "placeholder": "I can automate data processing, I can build better workflows"
+                }
+            ],
+            [
+                // Test Scenario 1
+                {
+                    "name": "scenario1Title",
+                    "type": "text",
+                    "label": "Test Scenario 1 - Title",
+                    "description": "A descriptive title for your first test scenario",
+                    "value": "",
+                    "required": true,
+                    "placeholder": "Happy path with valid input"
+                },
+                {
+                    "name": "scenario1Given",
+                    "type": "textarea",
+                    "label": "Given...",
+                    "description": "The initial context and setup for this scenario",
+                    "value": "",
+                    "required": true,
+                    "rows": "2",
+                    "placeholder": "the node receives a packet with text data 'hello world'"
+                },
+                {
+                    "name": "scenario1When",
+                    "type": "textarea",
+                    "label": "When...",
+                    "description": "The event or action that triggers the scenario",
+                    "value": "",
+                    "required": true,
+                    "rows": "2",
+                    "placeholder": "the packet is processed through the transform function"
+                },
+                {
+                    "name": "scenario1Then",
+                    "type": "textarea",
+                    "label": "Then...",
+                    "description": "The expected outcome or result",
+                    "value": "",
+                    "required": true,
+                    "rows": "2",
+                    "placeholder": "it should emit a packet with data 'HELLO WORLD'"
+                }
+            ],
+            [
+                // Test Scenario 2
+                {
+                    "name": "scenario2Title",
+                    "type": "text",
+                    "label": "Test Scenario 2 - Title",
+                    "description": "A descriptive title for your second test scenario",
+                    "value": "",
+                    "placeholder": "Edge case with empty input"
+                },
+                {
+                    "name": "scenario2Given",
+                    "type": "textarea",
+                    "label": "Given...",
+                    "description": "The initial context for this edge case or alternative scenario",
+                    "value": "",
+                    "rows": "2",
+                    "placeholder": "the node receives a packet with empty or null data"
+                },
+                {
+                    "name": "scenario2When",
+                    "type": "textarea",
+                    "label": "When...",
+                    "description": "The triggering event for this scenario",
+                    "value": "",
+                    "rows": "2",
+                    "placeholder": "the processing function is called"
+                },
+                {
+                    "name": "scenario2Then",
+                    "type": "textarea",
+                    "label": "Then...",
+                    "description": "What should happen in this case",
+                    "value": "",
+                    "rows": "2",
+                    "placeholder": "it should handle gracefully and emit appropriate result"
+                }
+            ],
+            [
+                // Test Scenario 3
+                {
+                    "name": "scenario3Title",
+                    "type": "text",
+                    "label": "Test Scenario 3 - Title (Optional)",
+                    "description": "A descriptive title for your third test scenario",
+                    "value": "",
+                    "placeholder": "Error handling scenario"
+                },
+                {
+                    "name": "scenario3Given",
+                    "type": "textarea",
+                    "label": "Given...",
+                    "description": "The initial context for this scenario",
+                    "value": "",
+                    "rows": "2",
+                    "placeholder": "the node receives invalid or malformed data"
+                },
+                {
+                    "name": "scenario3When",
+                    "type": "textarea",
+                    "label": "When...",
+                    "description": "The triggering event",
+                    "value": "",
+                    "rows": "2",
+                    "placeholder": "the processing function attempts to handle the data"
+                },
+                {
+                    "name": "scenario3Then",
+                    "type": "textarea",
+                    "label": "Then...",
+                    "description": "Expected error handling behavior",
+                    "value": "",
+                    "rows": "2",
+                    "placeholder": "it should emit an error packet or handle gracefully"
+                }
+            ],
+            [
+                // Additional Configuration
+                {
+                    "name": "customProperties",
+                    "type": "textarea",
+                    "label": "Custom Properties (Optional)",
+                    "description": "Any custom properties this node should have (e.g., colorName, predicateFunction). One per line with brief description.",
+                    "value": "",
+                    "rows": "3",
+                    "placeholder": "colorName - string: the color to apply\nthreshold - number: minimum value for filtering\nregexPattern - string: pattern for text matching"
+                },
+                {
+                    "name": "additionalContext",
+                    "type": "textarea",
+                    "label": "Additional Context (Optional)",
+                    "description": "Any additional information, constraints, or requirements for the AI to consider",
+                    "value": "",
+                    "rows": "3",
+                    "placeholder": "Should handle Unicode text, must be memory efficient, requires async operation support"
+                }
+            ]
+        ];
+
+        // Form data object
+        let formData = {};
+
+        // Initialize form data
+        function initFormData() {
+            form.forEach(pane => {
+                pane.forEach(field => {
+                    if (field.type === 'checkbox') {
+                        formData[field.name] = field.value || false;
+                    } else {
+                        formData[field.name] = field.value || '';
+                    }
+                });
+            });
+            updateFormDataDisplay();
+        }
+
+        // Update form data display
+        function updateFormDataDisplay() {
+            document.getElementById('formData').textContent = JSON.stringify(formData, null, 2);
+        }
+
+        // Text input
+        function createTextInput(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'form-control';
+            input.id = config.name;
+            input.name = config.name;
+            input.value = config.value || '';
+            if (config.placeholder) input.placeholder = config.placeholder;
+            if (config.required) input.required = true;
+
+            input.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Textarea
+        function createTextarea(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const textarea = document.createElement('textarea');
+            textarea.className = 'form-control';
+            textarea.id = config.name;
+            textarea.name = config.name;
+            textarea.value = config.value || '';
+            if (config.rows) textarea.rows = config.rows;
+            if (config.placeholder) textarea.placeholder = config.placeholder;
+            if (config.required) textarea.required = true;
+
+            textarea.addEventListener('input', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(textarea);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Select
+        function createSelect(config) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.setAttribute('for', config.name);
+            label.textContent = config.label;
+
+            const select = document.createElement('select');
+            select.className = 'form-select';
+            select.id = config.name;
+            select.name = config.name;
+            if (config.required) select.required = true;
+
+            config.options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+                if (config.value === option.value) optionElement.selected = true;
+                select.appendChild(optionElement);
+            });
+
+            select.addEventListener('change', (e) => {
+                formData[config.name] = e.target.value;
+                updateFormDataDisplay();
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(select);
+
+            if (config.description) {
+                const helpText = document.createElement('div');
+                helpText.className = 'form-text';
+                helpText.textContent = config.description;
+                wrapper.appendChild(helpText);
+            }
+
+            return wrapper;
+        }
+
+        // Create form field
+        function createFormField(config) {
+            switch (config.type) {
+                case 'text':
+                    return createTextInput(config);
+                case 'textarea':
+                    return createTextarea(config);
+                case 'select':
+                    return createSelect(config);
+                default:
+                    return createTextInput(config);
+            }
+        }
+
+        // Create accordion
+        function createAccordion() {
+            const accordion = document.createElement('div');
+            accordion.className = 'accordion';
+            accordion.id = 'wizardAccordion';
+
+            const paneNames = [
+                '📋 Basic Information',
+                '👤 User Story (BDD Narrative)',
+                '🧪 Test Scenario 1',
+                '🧪 Test Scenario 2',
+                '🧪 Test Scenario 3',
+                '⚙️ Advanced Configuration'
+            ];
+
+            form.forEach((pane, paneIndex) => {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'accordion-item';
+
+                const accordionHeader = document.createElement('h2');
+                accordionHeader.className = 'accordion-header';
+
+                const accordionButton = document.createElement('button');
+                accordionButton.className = 'accordion-button';
+                accordionButton.type = 'button';
+                accordionButton.setAttribute('data-bs-toggle', 'collapse');
+                accordionButton.setAttribute('data-bs-target', `#collapse${paneIndex}`);
+                accordionButton.setAttribute('aria-expanded', paneIndex === 0 ? 'true' : 'false');
+                accordionButton.setAttribute('aria-controls', `collapse${paneIndex}`);
+                accordionButton.textContent = paneNames[paneIndex] || `Step ${paneIndex + 1}`;
+
+                if (paneIndex !== 0) {
+                    accordionButton.classList.add('collapsed');
+                }
+
+                accordionHeader.appendChild(accordionButton);
+
+                const accordionCollapse = document.createElement('div');
+                accordionCollapse.id = `collapse${paneIndex}`;
+                accordionCollapse.className = paneIndex === 0 ? 'accordion-collapse collapse show' : 'accordion-collapse collapse';
+                accordionCollapse.setAttribute('data-bs-parent', '#wizardAccordion');
+
+                const accordionBody = document.createElement('div');
+                accordionBody.className = 'accordion-body';
+
+                pane.forEach(fieldConfig => {
+                    const fieldElement = createFormField(fieldConfig);
+                    accordionBody.appendChild(fieldElement);
+                });
+
+                accordionCollapse.appendChild(accordionBody);
+                accordionItem.appendChild(accordionHeader);
+                accordionItem.appendChild(accordionCollapse);
+                accordion.appendChild(accordionItem);
+            });
+
+            return accordion;
+        }
+
+        // Generate AI prompt
+        function generatePrompt() {
+            // Validate required fields
+            const requiredFields = [
+                'nodeTitle', 'nodeType', 'userRole', 'userWant', 'userBenefit',
+                'scenario1Title', 'scenario1Given', 'scenario1When', 'scenario1Then'
+            ];
+
+            const missingFields = requiredFields.filter(field => !formData[field] || formData[field].trim() === '');
+
+            if (missingFields.length > 0) {
+                alert(`Please fill out all required fields. Missing: ${missingFields.join(', ')}`);
+                return;
+            }
+
+            const prompt = generateAIPrompt();
+            document.getElementById('generatedPrompt').textContent = prompt;
+            document.getElementById('promptOutput').style.display = 'block';
+            document.getElementById('promptOutput').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Generate the actual AI prompt text
+        function generateAIPrompt() {
+            let prompt = `# Visual Programming Node Generator
+
+Create a ${formData.nodeType} node for a visual programming environment. Generate both the EventEmitter class and manifest.json file.
+
+## Node Specification
+
+**Title:** ${formData.nodeTitle}
+**Type:** ${formData.nodeType}
+
+## User Story (BDD Format)
+
+**Narrative:**
+- **As a** ${formData.userRole}
+- **I want** ${formData.userWant}
+- **So that** ${formData.userBenefit}
+
+## Acceptance Criteria
+
+### Scenario 1: ${formData.scenario1Title}
+- **Given** ${formData.scenario1Given}
+- **When** ${formData.scenario1When}
+- **Then** ${formData.scenario1Then}
+`;
+
+            // Add scenario 2 if provided
+            if (formData.scenario2Title && formData.scenario2Given && formData.scenario2When && formData.scenario2Then) {
+                prompt += `
+### Scenario 2: ${formData.scenario2Title}
+- **Given** ${formData.scenario2Given}
+- **When** ${formData.scenario2When}
+- **Then** ${formData.scenario2Then}
+`;
+            }
+
+            // Add scenario 3 if provided
+            if (formData.scenario3Title && formData.scenario3Given && formData.scenario3When && formData.scenario3Then) {
+                prompt += `
+### Scenario 3: ${formData.scenario3Title}
+- **Given** ${formData.scenario3Given}
+- **When** ${formData.scenario3When}
+- **Then** ${formData.scenario3Then}
+`;
+            }
+
+            // Add custom properties if provided
+            if (formData.customProperties && formData.customProperties.trim()) {
+                prompt += `
+## Custom Properties
+${formData.customProperties}
+`;
+            }
+
+            // Add additional context if provided
+            if (formData.additionalContext && formData.additionalContext.trim()) {
+                prompt += `
+## Additional Requirements
+${formData.additionalContext}
+`;
+            }
+
+            prompt += `
+## Technical Requirements
+
+### Packet Structure
+\`\`\`javascript
+packet = {
+  meta: {
+    id: guid,
+    ver: [2, guid],
+    producer: originalProducerId,
+    transducer: previousNodeId
+  },
+  data: {
+    type: mime?,
+    content: "actual data",
+    // other properties as needed
+  }
+}
+\`\`\`
+
+### EventEmitter Template
+\`\`\`javascript
+class MyNode extends EventEmitter {
+    constructor() {
+        super();
+        this.on('input', packet => this.process(packet));
+    }
+
+    rev = '1-guid-hexadecimal';
+
+    #processor = (packet) => packet;
+
+    upgrade(rev, fn) {
+        if (this.rev > rev) return;
+        this.#processor = fn;
+    }
+
+    process(packet) {
+        const result = this.#processor(packet);
+        this.emit('output', result);
+    }
+
+    start() {
+        // mount/initialize
+    }
+
+    stop() {
+        // destroy/terminate
+    }
+}
+\`\`\`
+
+### Manifest.json Structure
+Include:
+- node.input ports (for TRANSDUCER/REDUCER)
+- node.output ports (for PRODUCER/TRANSDUCER)
+- node.properties (for custom configuration)
+- Proper datatypes and descriptions
+
+## Deliverables
+1. Complete EventEmitter class implementation
+2. Complete manifest.json file
+3. Simple test implementation based on the BDD scenarios
+4. Brief usage documentation
+
+Generate code that follows the packet structure, implements the test scenarios, and provides a clean, simple node that does one thing well.`;
+
+            return prompt;
+        }
+
+        // Copy prompt to clipboard
+        function copyPrompt() {
+            const promptText = document.getElementById('generatedPrompt').textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.className = 'btn btn-success mt-2';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.className = 'btn btn-outline-primary mt-2';
+                }, 2000);
+            });
+        }
+
+        // Initialize form
+        function initForm() {
+            initFormData();
+            const formContainer = document.getElementById('wizardForm');
+            const accordion = createAccordion();
+            formContainer.appendChild(accordion);
+        }
+
+        // Reset form
+        function resetForm() {
+            initFormData();
+            document.getElementById('wizardForm').innerHTML = '';
+            document.getElementById('promptOutput').style.display = 'none';
+            initForm();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initForm);
+    </script>
+</body>
+</html>
