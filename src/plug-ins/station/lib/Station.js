@@ -1,4 +1,3 @@
-// import { rid, ReactiveSignal as Signal, namedCombineLatest, fromEvent } from "../../../core/Signal.js";
 import { Signal } from 'signals';
 import { id } from 'elements';
 
@@ -94,22 +93,16 @@ export class Station {
   //   return this.#signalStorage[name].subscribe(subscriber);
   // }
 
-  // subscribe(subscriber){
-  //   return namedCombineLatest(this.#signalStorage).subscribe(subscriber);
-  //   this.#signalStorage.keys
-  // }
+
   connect(){
     const response =  this.#signalStorage.id.combineLatest(...this.#acceptable.filter(o=>o!=='id').map(name=>this.#signalStorage[name]))
     //response.subscribe(console.warn)
     return response;
 
-    // return namedCombineLatest(this.#signalStorage).subscribe(subscriber);
-    // this.#signalStorage.keys
+
   }
 
-  // get stream(){
-  //   return namedCombineLatest(this.#signalStorage);
-  // }
+
 
   // Helper & Utility Functions
   #pick(keys, data){

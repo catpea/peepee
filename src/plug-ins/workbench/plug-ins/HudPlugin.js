@@ -36,8 +36,8 @@ export class HudPlugin {
   }
 
   updateInfo() {
-    document.getElementById("pan-info").textContent = `Pan: (${this.engine.panX.get().toFixed(1)}, ${this.engine.panY.get().toFixed(1)})`;
-    document.getElementById("scale-info").textContent = `Scale: ${this.engine.scale.get().toFixed(2)}`;
+    document.getElementById("pan-info").textContent = `Pan: (${this.engine.panX.value.toFixed(1)}, ${this.engine.panY.value.toFixed(1)})`;
+    document.getElementById("scale-info").textContent = `Scale: ${this.engine.scale.value.toFixed(2)}`;
     this.updateGridLabels();
   }
 

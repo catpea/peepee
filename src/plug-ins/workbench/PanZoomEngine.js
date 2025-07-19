@@ -1,4 +1,3 @@
-// import { rid, ReactiveSignal as Signal, fromEvent, namedCombineLatest } from "../../core/Signal.js";
 import { Signal } from 'signals';
 
 // Main PanZoomEngine class
@@ -13,14 +12,14 @@ export class PanZoomEngine {
     this.viewport = svgElement.querySelector("#viewport");
 
     // Reactive signals
-    this.mousePosX = new Signal(0);
-    this.mousePosY = new Signal(0);
-    this.worldPosX = new Signal(0);
-    this.worldPosY = new Signal(0);
+    this.mousePosX = new Signal(0, {label: 'mousePosX'});
+    this.mousePosY = new Signal(0, {label: 'mousePosY'});
+    this.worldPosX = new Signal(0, {label: 'worldPosX'});
+    this.worldPosY = new Signal(0, {label: 'worldPosY'});
 
-    this.scale = new Signal(1);
-    this.panX = new Signal(0);
-    this.panY = new Signal(0);
+    this.scale = new Signal(1, {label: 'scale'});
+    this.panX = new Signal(0, {label: 'panX'});
+    this.panY = new Signal(0, {label: 'panY'});
 
     this.tileSize = 40;
 
@@ -72,45 +71,45 @@ export class PanZoomEngine {
 
   // Transform management
   updateTransform() {
-    const transform = `translate(${this.panX.get()}, ${this.panY.get()}) scale(${this.scale.get()})`;
+    const transform = `translate(${this.panX.value}, ${this.panY.value}) scale(${this.scale.value})`;
     this.viewport.setAttribute("transform", transform);
   }
 
   // Pan operations
   pan(x, y) {
-    this.panX.set(x);
-    this.panY.set(y);
+    this.panX.value = x;
+    this.panY.value = y;
   }
 
   panBy(deltaX, deltaY) {
-    this.panX.set(this.panX.get() + deltaX);
-    this.panY.set(this.panY.get() + deltaY);
+    this.panX.value = this.panX.value + deltaX;
+    this.panY.value = this.panY.value + deltaY;
   }
 
   // Zoom operations
   zoom(newScale) {
-    this.scale.set(this.clampScale(newScale));
+    this.scale.value = this.clampScale(newScale);
   }
 
   zoomBy(deltaScale) {
-    this.zoom(this.scale.get() * deltaScale);
+    this.zoom(this.scale.value * deltaScale);
   }
 
   zoomAt(newScale, x, y) {
-    const oldScale = this.scale.get();
+    const oldScale = this.scale.value;
     const clampedScale = this.clampScale(newScale);
     const scaleFactor = clampedScale / oldScale;
 
     const svgPoint = this.clientToSVG(x, y);
-    const dx = (svgPoint.x - this.panX.get()) * (1 - scaleFactor);
-    const dy = (svgPoint.y - this.panY.get()) * (1 - scaleFactor);
+    const dx = (svgPoint.x - this.panX.value) * (1 - scaleFactor);
+    const dy = (svgPoint.y - this.panY.value) * (1 - scaleFactor);
 
-    this.scale.set(clampedScale);
+    this.scale.value = clampedScale;
     this.panBy(dx, dy);
   }
 
   zoomAtBy(deltaScale, x, y) {
-    this.zoomAt(this.scale.get() * deltaScale, x, y);
+    this.zoomAt(this.scale.value * deltaScale, x, y);
   }
 
   zoomIn() {
@@ -143,14 +142,14 @@ export class PanZoomEngine {
   }
 
   svgToWorld(svgX, svgY) {
-    const worldX = (svgX - this.panX.get()) / this.scale.get();
-    const worldY = (svgY - this.panY.get()) / this.scale.get();
+    const worldX = (svgX - this.panX.value) / this.scale.value;
+    const worldY = (svgY - this.panY.value) / this.scale.value;
     return { x: worldX, y: worldY };
   }
 
   worldToSVG(worldX, worldY) {
-    const svgX = worldX * this.scale.get() + this.panX.get();
-    const svgY = worldY * this.scale.get() + this.panY.get();
+    const svgX = worldX * this.scale.value + this.panX.value;
+    const svgY = worldY * this.scale.value + this.panY.value;
     return { x: svgX, y: svgY };
   }
 

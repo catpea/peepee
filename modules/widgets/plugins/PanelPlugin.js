@@ -107,6 +107,8 @@ class PanelComponent extends Component {
 
         // Panel Title
         const panelTitleBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        this.dragHandle = panelTitleBg;
+
         panelTitleBg.setAttribute('class', 'panel-title-bg');
         panelTitleBg.setAttribute('clip-path', `url(#${clipPathId})`);
         this.setAttributeSignal(panelTitleBg, 'width');

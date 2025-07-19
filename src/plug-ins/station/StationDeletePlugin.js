@@ -22,6 +22,8 @@ export class StationDeletePlugin extends Plugin {
    this.app.on('selectNode', station => (this.app.selectedTool.value == 'delete') && this.stationRemove(station.id));
    this.app.on('stationRemove', id => this.stationRemove(id) );
 
+   console.warn('TODO: delete connections leading to the station first!')
+
   }
 
   stop() {
@@ -35,6 +37,10 @@ export class StationDeletePlugin extends Plugin {
     //console.log('stationRemove',id, this.stationInstances.has(id));
     if (!id) return console.warn("Attempted to remove a station without an id.");
     if (!this.stationInstances.has(id)) return console.warn(`No station found with id: ${id}`);
+
+
+    this.eventDispatch('deselectAll');
+
     this.stationInstances.delete(id);
     this.eventDispatch('stationRemoved', id);
   }

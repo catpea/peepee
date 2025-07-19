@@ -1,8 +1,7 @@
-import { Signal } from 'signals';
+import { Signal, combineLatest, fromEvent, fromBetweenEvents } from 'signals';
 
 import { Plugin } from "plugin";
 
-// import { rid, ReactiveSignal as Signal, namedCombineLatest, fromEvent } from "../../core/Signal.js";
 
 export class PortManagerPlugin extends Plugin {
   app;
@@ -18,6 +17,7 @@ export class PortManagerPlugin extends Plugin {
 
   init(app) {
     this.app = app;
+    this.svg = app.svg;
 
     this.stationManager = app.plugins.get("AgentManagerPlugin");
     this.agentInstances = this.stationManager.agentInstances;
@@ -63,12 +63,10 @@ export class PortManagerPlugin extends Plugin {
     };
 
     // when station changes of moves, update port coordinates
-    station.connect().combineLatest(this.engine.scale, portComponent.attributes.portSocketX ).subscribe((arg) => {
-      const [id, x1, y1, r, label, agentType, scale, portSocketX] = arg.flat();
-      // if(! portComponent.portSocket) return;
-      // if(! portComponent.portSocket.getCTM()) return;
-      //console.info('CTM UPDATE, lol', arg )
-      const { e: x, f: y } = portComponent.portSocket.getCTM();
+    combineLatest(station.connect(), this.engine.scale, portComponent.attributes.portSocketX )
+      .subscribe(([[id, x1, y1, r, label, agentType], scale, portSocketX]) => {
+
+        const { e: x, f: y } = portComponent.portSocket.getCTM();
       const point = this.engine.clientToWorld(x, y);
       port.x.value = point.x + portSocketX;
       port.y.value = point.y + 8;
@@ -101,6 +99,79 @@ export class PortManagerPlugin extends Plugin {
 
     rootComponent.element.setAttribute("data-station-id", station.id);
     rootComponent.element.addEventListener("click", () => this.eventDispatch("selectNode", station));
+
+
+    for (const port of manifest.node.outputs){
+
+      const id = [station.id, "output", port.id].join(":");
+      const portComponent = this.widgets.registry.get(id);
+      // console.log(portComponent)
+      let previousTool = this.app.selectedTool.value;
+      let convenienceTool = 'connect';
+      const pressingActivity = fromBetweenEvents(portComponent.element, 'mousedown', this.svg, 'mouseup');
+
+      const unsubscribe = pressingActivity.subscribe(isPressing => {
+        if(isPressing){
+          previousTool = this.app.selectedTool.value;
+          this.app.selectedTool.value = convenienceTool;
+        }else{
+          this.app.selectedTool.value = previousTool;
+        }
+      });
+      console.warn('unsubscribe', unsubscribe)
+
+    }
+
+
+
+
+    // let lastTool = this.app.selectedTool.value;
+    // let overrideActive = false;
+
+    // // fromEvent(rootComponent.element, 'mousedown').subscribe(()=>{
+    // //   overrideActive=true;
+    // //   lastTool = this.app.selectedTool.value;
+    // //   this.app.selectedTool.value = 'move';
+    // //   const currentTool = this.app.selectedTool.value
+    // //   console.log({lastTool, currentTool})
+    // // });
+
+    // // fromEvent(rootComponent.element, 'mouseup').subscribe(()=>{
+    // //   console.log('mouseup', lastTool)
+    // //   if(!overrideActive) return;
+    // //   overrideActive = false;
+    // //   this.app.selectedTool.value = lastTool;
+    // // });
+
+
+    let previousTool = this.app.selectedTool.value;
+    let convenienceTool = 'move';
+    const pressingActivity = fromBetweenEvents(rootComponent.dragHandle, 'mousedown', this.svg, 'mouseup');
+
+    pressingActivity.subscribe(isPressing => {
+      if(isPressing){
+        previousTool = this.app.selectedTool.value;
+        this.app.selectedTool.value = convenienceTool;
+      }else{
+        this.app.selectedTool.value = previousTool;
+      }
+    });
+
+
+
+
+
+
+
+    // fromEvent(rootComponent.element, 'mousedown')
+    // .switchMap(this.app.selectedTool)
+    // .subscribe(tool=>{
+    //   tool.value = 'move'
+    // })
+
+    // fromEvent(document, 'mouseup')
+    // .switchMap(this.app.selectedTool)
+    // .subscribe(tool=>tool.value = 'move')
 
     // Station Position
     station.connect().subscribe(([id, x, y, r, label, agentType]) => {

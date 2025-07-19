@@ -1,7 +1,7 @@
 import { Plugin } from 'plugin';
 
 import { take } from "../../core/Utils.js";
-import { ReactiveSignal as Signal } from "../../core/Signal.js";
+
 
 import { PropertiesForm, SignalFieldGenerator } from "./SignalFieldGenerator.js";
 
@@ -44,7 +44,7 @@ export class PropertiesPlugin extends Plugin {
     // Listen to selection events
     app.on('selectNode', node => this.showNodeProperties(node));
     app.on('selectConnection', connection => this.showConnectionProperties(connection));
-    app.on('deselect', () => this.clearPanel());
+    app.on('deselectAll', () => this.clearPanel());
 
     this.loadStyleSheet(new URL("./style.css", import.meta.url).href);
   }
@@ -52,6 +52,10 @@ export class PropertiesPlugin extends Plugin {
   stop() {
     for (const unsubscribe of this.subscriptions) unsubscribe();
     this.subscriptions.clear();
+  }
+
+  clearPanel(){
+    if(this.form) this.form.terminate();
   }
 
   async showNodeProperties(station){

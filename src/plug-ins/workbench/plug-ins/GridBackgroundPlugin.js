@@ -103,9 +103,9 @@ export class GridBackgroundPlugin {
   updateBackground() {
     if (!this.patternElement || !this.dotElement || !this.backgroundRect) return;
 
-    const scale = this.engine.scale.get();
-    const panX = this.engine.panX.get();
-    const panY = this.engine.panY.get();
+    const scale = this.engine.scale.value;
+    const panX = this.engine.panX.value;
+    const panY = this.engine.panY.value;
     const worldMouseX = this.engine.worldPosX.value;
     const worldMouseY = this.engine.worldPosY.value;
 

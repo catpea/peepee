@@ -1,4 +1,4 @@
-import { Signal } from "../../core/Signal.js";
+import { Signal } from 'signals';
 
 export class SignalFieldGenerator {
   constructor() {

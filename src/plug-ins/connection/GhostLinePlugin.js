@@ -1,7 +1,5 @@
 import { Plugin } from 'plugin';
 
-import { rid, ReactiveSignal as Signal, namedCombineLatest, fromEvent } from "../../core/Signal.js";
-
 export class GhostLinePlugin extends Plugin {
 
   app;
@@ -45,6 +43,11 @@ export class GhostLinePlugin extends Plugin {
 
 
   onMouseDown(e) {
+
+
+
+
+
     if (!this.isToolActive) return;
 
     if (!e.target.classList.contains("port-socket")) return;
@@ -53,7 +56,7 @@ export class GhostLinePlugin extends Plugin {
     //console.warn('fromPortId', fromPortId);
 
     const fromPort = this.portInstances.get(fromPortId);
-    //console.warn('fromPort', fromPort);
+    console.warn('fromPort', fromPort);
 
     const fromPortName = fromPort.name;
     //console.warn('fromPortName', fromPortName);

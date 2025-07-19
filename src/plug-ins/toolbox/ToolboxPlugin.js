@@ -1,7 +1,7 @@
 import { Plugin } from 'plugin';
 
 import { take } from "../../core/Utils.js";
-import { ReactiveSignal as Signal } from "../../core/Signal.js";
+import { Signal } from 'signals';
 // import { PersistentMap } from "./PersistentMap.js";
 
 export class ToolboxPlugin extends Plugin {
@@ -35,7 +35,7 @@ export class ToolboxPlugin extends Plugin {
     this.toolListElement = divElement.querySelector("#tool-list-toolbox");
 
     if (!this.app.tools) this.app.tools = {};
-    if (!this.app.selectedTool) this.app.selectedTool = new Signal(this.defaultTool);
+    if (!this.app.selectedTool) this.app.selectedTool = new Signal(this.defaultTool, {label: 'defaultTool'});
 
     this.app.selectedTool.subscribe((selectedName) => {
       document.getElementById("tool-info").textContent = `Tool: (${selectedName})`;
@@ -104,7 +104,9 @@ export class ToolboxPlugin extends Plugin {
     const toolIcon = document.createElement("i");
     toolButton.classList.add("bi", toolData.icon);
 
+    // BUTTON DECORATION
     this.app.selectedTool.subscribe((selectedName) => {
+      // console.log('toolbox: this.app.selectedTool changed', selectedName, this.app.selectedTool.value)
       if (selectedName === toolName) {
         toolButton.classList.add("active");
       } else {
@@ -112,6 +114,7 @@ export class ToolboxPlugin extends Plugin {
       }
     });
 
+    // ICON HIGH LIGHT
     this.app.selectedTool.subscribe((selectedName) => {
       if (selectedName === toolName) {
         toolButton.classList.remove(toolData.icon);

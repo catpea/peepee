@@ -1,7 +1,6 @@
 import { Plugin } from 'plugin';
 
-import { rid, ReactiveSignal as Signal, namedCombineLatest, fromEvent } from "../../core/Signal.js";
-
+import { Signal } from 'signals';
 export class StationMovePlugin extends Plugin {
   app;
   subscriptions;
@@ -47,6 +46,11 @@ export class StationMovePlugin extends Plugin {
 
 
     onMouseDown(e) {
+      setTimeout(this.onMouseDown2(e),1)
+    }
+    onMouseDown2(e) {
+
+      console.log('move: TOOL CHECK', this.app.selectedTool.value, this.toolActive.value)
     if (!this.toolActive.value) return;
 
     // const target = e.target.closest("g.station");

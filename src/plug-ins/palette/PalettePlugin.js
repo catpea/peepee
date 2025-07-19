@@ -1,7 +1,6 @@
 import { Plugin } from 'plugin';
 
 import { take } from "../../core/Utils.js";
-import { ReactiveSignal as Signal } from "../../core/Signal.js";
 // import { PersistentMap } from "./PersistentMap.js";
 
 export class PalettePlugin extends Plugin {
@@ -71,7 +70,7 @@ export class PalettePlugin extends Plugin {
 
 
       // this will trigger this.graph.on('nodeAdded...
-      const node = this.app.graph.addNode({ x , y , type: agentType, label: agentName });
+      // const node = this.app.graph.addNode({ x , y , type: agentType, label: agentName });
       const raw = {
         x,y,
         // label: agentName,

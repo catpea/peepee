@@ -9,7 +9,7 @@ export class StationRenderPlugin extends Plugin {
     super();
 
     this.subscriptions = new Set();
-    this.stations = new Map();
+    this.stationRendererScrap = new Map();
   }
 
   init(app) {
@@ -22,12 +22,11 @@ export class StationRenderPlugin extends Plugin {
     this.widgetManagerPlugin = app.plugins.get('WidgetManagerPlugin');
     this.widgetEngine = this.widgetManagerPlugin.widgetEngine;
 
-    // this.app.on('stationAdded', station => this.renderStation(station) );
-    // this.app.on('stationRestored', station => this.renderStation(station) );
-
+    this.app.on('stationAdded', station => this.renderStation(station) );
+    this.app.on('stationRestored', station => this.renderStation(station) );
     this.app.on('stationRemoved', id => this.removeStation(id));
 
-   this.app.emit('registerTool', {name:'move',  data:{id:'move-tool',  icon:'bi-arrows-move', iconSelected:'bi-arrows-move', description:'move items' }});
+    this.app.emit('registerTool', {name:'move',  data:{id:'move-tool',  icon:'bi-arrows-move', iconSelected:'bi-arrows-move', description:'move items' }});
 
 
   }
@@ -56,55 +55,19 @@ export class StationRenderPlugin extends Plugin {
 
   removeStation( id ) {
     this.app.layers.widgets.querySelector(`g.panel[data-station-id='${id}']`).remove();
+    this.stationRendererScrap.get(id).forEach(destructible=>destructible())
   }
 
-  // renderStation( station ) {
+  renderStation( station ) {
+     this.stationRendererScrap.set(station.id, new Set());
 
-
-
-  //   return;
-
-
-
-
-  //   const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  //   group.setAttribute("class", "station");
-  //   group.setAttribute("data-station-id", station.id);
-
-  //   // this.renderStationLabel(station);
-  //   this.renderStationMarker(station, group);
-  //   // this.renderStationPorts(station, group);
-
-  //   this.app.layers.stations.appendChild(group);
-  // }
-
-
-  renderStationLabel(station){
-
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("class", "label-text station-label");
-    label.setAttribute("x", station.x.value);
-    label.setAttribute("y", station.y.value - 20);
-    label.textContent = station.label.value;
-
-    label.addEventListener("dblclick", () => {
-      const newLabel = prompt("Enter station name:", station.label.value);
-      if (newLabel !== null) {
-        station.label.value = newLabel;
-      }
-    });
-
-    station.label.subscribe((newLabel) => {
-      label.textContent = newLabel;
-    });
-
-    this.app.layers.labels.appendChild(label);
+    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    group.setAttribute("class", "station");
+    group.setAttribute("data-station-id", station.id);
+    this.renderStationMarker(station, group);
+    this.app.layers.stations.appendChild(group);
 
   }
-
-
-
-
 
   async renderStationMarker( station, group ) {
 
@@ -119,59 +82,20 @@ export class StationRenderPlugin extends Plugin {
     circle.setAttribute("data-station-id", station.id);
     circle.setAttribute("cx", station.x);
     circle.setAttribute("cy", station.y);
-    circle.setAttribute("r", station.r);
+    circle.setAttribute("r", 2);
     circle.addEventListener("click",()=> this.eventDispatch("selectNode", station) );
     group.appendChild(circle);
 
-    this.listenTo(station, 'x', (x) => {
+    const subscription = station.connect().subscribe(([id, x, y, r, label, agentType]) => {
       circle.setAttribute("cx", x);
-      // label.setAttribute("x", x);
-    });
-
-    this.listenTo(station, 'y', (y) => {
       circle.setAttribute("cy", y);
-      // label.setAttribute("y", y - 23);
     });
 
-    this.tuneIn(record.get('strokeColor', 'var(--base01)'), v=>circle.style.stroke = v)
-    this.tuneIn(record.get('fillColor', 'var(--base03)'), v=>circle.style.fill = v)
+
+    this.stationRendererScrap.get(station.id).add(subscription);
 
 
   }
 
-  // renderStationPorts(station, group){
-
-  //   if(agent.ports){
-  //     // Render in-ports
-  //     let inStartAngle = 270;
-  //     const inAngleStep = -36;
-  //     for(const [index, {id, type, format}] of Object.entries(agent.ports.filter(port=>port.type=='in'))){
-  //       const {x, y} = this.getPortCircleCoordinates({ r: station.r.value, x: station.x.value, y: station.y.value, angle:inStartAngle });
-  //       const port = this.renderPort({id, r:station.r.value/2, x, y});
-  //       group.appendChild(port);
-  //       inStartAngle+=inAngleStep;
-  //     }
-
-  //     // Render out-ports
-  //     let outStartAngle = 90;
-  //     const outAngleStep = 36;
-  //     for(const {id, type, format} of Object.entries(agent.ports.filter(port=>port.type=='out'))){
-  //       const {x, y} = this.getPortCircleCoordinates({ r: station.r.value, x: station.x.value, y: station.y.value, angle:outStartAngle });
-  //       const port = this.renderPort({id, r:station.r.value/2, x, y});
-  //       group.appendChild(port);
-  //       outStartAngle+=outAngleStep;
-  //     }
-  //   }
-
-
-  // }
 
 }
-
-/*
-# USAGE
-  this.stationManager = app.plugins.get('StationManager');
-  this.stationManager.createStation({id:1, x:10, y:10, r:10})
-
-
-*/

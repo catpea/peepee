@@ -70,15 +70,15 @@ export class SubwayBuilder extends HTMLElement {
     // const svg = this.querySelector('#svg-container');
     const svg = this.querySelector("#main-svg");
     const app = new Application(svg);
+    Object.freeze(app);
 
     app.use(new ColorManagerPlugin());
-
     app.use(new WidgetManagerPlugin());
-
     app.use(new ToolboxPlugin());
-
     app.use(new WorkbenchPlugin());
+
     app.use(new PalettePlugin());
+
     app.use(new PropertiesPlugin());
 
     // Station System - respond to click on canvas create stations

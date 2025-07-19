@@ -1,8 +1,8 @@
 import { Plugin } from 'plugin';
 
 import { PanZoomEngine } from "./PanZoomEngine.js";
-import { InteractionEvents } from './plug-ins/InteractionEvents.js';
 
+import { InteractionEvents } from './plug-ins/InteractionEvents.js';
 import { InteractionMousePlugin } from './plug-ins/InteractionMousePlugin.js';
 import { InteractionWheelPlugin } from './plug-ins/InteractionWheelPlugin.js';
 import { InteractionTouchMovePlugin } from './plug-ins/InteractionTouchMovePlugin.js';
@@ -63,12 +63,6 @@ export class WorkbenchPlugin extends Plugin {
 
     this.engine.start();
 
-    // fromEvent(this.svg, 'click')
-    //   .map(e => ({ e: e, x: e.clientX, y: e.clientY }))
-    //   .subscribe(({x,y})=>{
-
-    //   });
-
   }
 
   stop() {
@@ -77,17 +71,4 @@ export class WorkbenchPlugin extends Plugin {
     this.subscriptions.clear();
   }
 
-
-
-  ////////////////
-
-
 }
-
-/*
-# USAGE
-  this.stationManager = app.plugins.get('StationManager');
-  this.stationManager.createStation({id:1, x:10, y:10, r:10})
-
-
-*/

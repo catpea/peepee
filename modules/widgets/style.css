@@ -66,6 +66,7 @@
           stroke-width: 0;
 
         .panel-bg {
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 1);
           fill: var(--surface-color);
         }
 
@@ -84,6 +85,7 @@
 
         .panel-caption {
           user-select: none;
+          pointer-events: none;
           fill: var(--text);
           font-weight: 600;
         }

@@ -1,6 +1,5 @@
 import { Plugin } from 'plugin';
 
-import { rid, ReactiveSignal as Signal, namedCombineLatest, fromEvent } from "../../core/Signal.js";
 
 export class ConnectionRenderPlugin extends Plugin {
   app;
