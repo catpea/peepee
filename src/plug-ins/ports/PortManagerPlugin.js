@@ -1,7 +1,6 @@
-import { Signal, combineLatest, fromEvent, fromBetweenEvents } from 'signals';
+import { Signal, combineLatest, fromEvent, fromBetweenEvents } from "signals";
 
 import { Plugin } from "plugin";
-
 
 export class PortManagerPlugin extends Plugin {
   app;
@@ -59,21 +58,18 @@ export class PortManagerPlugin extends Plugin {
       portElement: portComponent.element,
       x: new Signal(0),
       y: new Signal(0),
-      unsubscribe:[],
+      unsubscribe: [],
     };
 
     // when station changes of moves, update port coordinates
-    combineLatest(station.connect(), this.engine.scale, portComponent.attributes.portSocketX )
-      .subscribe(([[id, x1, y1, r, label, agentType], scale, portSocketX]) => {
-
-        const { e: x, f: y } = portComponent.portSocket.getCTM();
+    combineLatest(station.connect(), this.engine.scale, portComponent.attributes.portSocketX).subscribe(([[id, x1, y1, r, label, agentType], scale, portSocketX]) => {
+      const { e: x, f: y } = portComponent.portSocket.getCTM();
       const point = this.engine.clientToWorld(x, y);
       port.x.value = point.x + portSocketX;
       port.y.value = point.y + 8;
 
       // port.x.value = portComponent.attributes.portSocketXCTM.value;
       // port.y.value = portComponent.attributes.portSocketYCTM.valuealue = portComponent.attributes.portSocketYCTM.value;
-
     });
 
     this.portInstances.set(port.id, port);
@@ -100,30 +96,24 @@ export class PortManagerPlugin extends Plugin {
     rootComponent.element.setAttribute("data-station-id", station.id);
     rootComponent.element.addEventListener("click", () => this.eventDispatch("selectNode", station));
 
-
-    for (const port of manifest.node.outputs){
-
+    for (const port of manifest.node.outputs) {
       const id = [station.id, "output", port.id].join(":");
       const portComponent = this.widgets.registry.get(id);
       // console.log(portComponent)
       let previousTool = this.app.selectedTool.value;
-      let convenienceTool = 'connect';
-      const pressingActivity = fromBetweenEvents(portComponent.element, 'mousedown', this.svg, 'mouseup');
+      let convenienceTool = "connect";
+      const pressingActivity = fromBetweenEvents(portComponent.element, "mousedown", this.svg, "mouseup");
 
-      const unsubscribe = pressingActivity.subscribe(isPressing => {
-        if(isPressing){
+      const unsubscribe = pressingActivity.subscribe((isPressing) => {
+        if (isPressing) {
           previousTool = this.app.selectedTool.value;
           this.app.selectedTool.value = convenienceTool;
-        }else{
+        } else {
           this.app.selectedTool.value = previousTool;
         }
       });
-      console.warn('unsubscribe', unsubscribe)
-
+      console.warn("unsubscribe", unsubscribe);
     }
-
-
-
 
     // let lastTool = this.app.selectedTool.value;
     // let overrideActive = false;
@@ -143,25 +133,18 @@ export class PortManagerPlugin extends Plugin {
     // //   this.app.selectedTool.value = lastTool;
     // // });
 
-
     let previousTool = this.app.selectedTool.value;
-    let convenienceTool = 'move';
-    const pressingActivity = fromBetweenEvents(rootComponent.dragHandle, 'mousedown', this.svg, 'mouseup');
+    let convenienceTool = "move";
+    const pressingActivity = fromBetweenEvents(rootComponent.dragHandle, "mousedown", this.svg, "mouseup");
 
-    pressingActivity.subscribe(isPressing => {
-      if(isPressing){
+    pressingActivity.subscribe((isPressing) => {
+      if (isPressing) {
         previousTool = this.app.selectedTool.value;
         this.app.selectedTool.value = convenienceTool;
-      }else{
+      } else {
         this.app.selectedTool.value = previousTool;
       }
     });
-
-
-
-
-
-
 
     // fromEvent(rootComponent.element, 'mousedown')
     // .switchMap(this.app.selectedTool)
@@ -175,14 +158,12 @@ export class PortManagerPlugin extends Plugin {
 
     // Station Position
     station.connect().subscribe(([id, x, y, r, label, agentType]) => {
-
       rootComponent.attributes.top.value = y;
       rootComponent.attributes.left.value = x;
-
     });
 
-    manifest.node.inputs.forEach((o) => this.createPort(station, 'input', o));
-    manifest.node.outputs.forEach((o) => this.createPort(station, 'output', o));
+    manifest.node.inputs.forEach((o) => this.createPort(station, "input", o));
+    manifest.node.outputs.forEach((o) => this.createPort(station, "output", o));
 
     this.eventDispatch("portsAdded", agent);
   }
@@ -197,5 +178,4 @@ export class PortManagerPlugin extends Plugin {
       }
     });
   }
-
 }
