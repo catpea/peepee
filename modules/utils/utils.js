@@ -52,6 +52,11 @@
 
 // Brilliant - Elegant JavaScript Utilities ✨
 
+export function encodeXmlEntities(str){
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+
 // Array chunking - so pretty <3
 export function* take(array, n) {
   for (let i = 0; i < array.length; i += n) yield array.slice(i, i + n);

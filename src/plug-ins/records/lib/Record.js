@@ -63,7 +63,9 @@ export class Record {
 
   // Subbscribe to get notified when any of the signals change.
   subscribe(subscriber){
-    // notification only when any signal values change
+    Array.from(this.#data).map(([key, signal]) => {
+      if(signal.value != null) subscriber(key, signal.value);
+    });
     this.#subscribers.add(subscriber);
     return () => this.#subscribers.delete(subscriber);
   }

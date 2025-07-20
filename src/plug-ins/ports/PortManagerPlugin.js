@@ -25,6 +25,9 @@ export class PortManagerPlugin extends Plugin {
     this.stationManager = app.plugins.get("StationManagerPlugin");
     this.stationInstances = this.stationManager.stationInstances;
 
+    this.recordsManager = app.plugins.get('RecordsManagerPlugin');
+    this.recordInstances = this.recordsManager.recordInstances;
+
     this.gadgetManagerPlugin = app.plugins.get("GadgetManagerPlugin");
     this.gadgetRegistry = this.gadgetManagerPlugin.gadgetRegistry;
 
@@ -80,18 +83,38 @@ export class PortManagerPlugin extends Plugin {
   }
 
   async instantiatePorts(agent) {
-    console.log('instantiatePorts', agent)
+
+
     const { id } = agent;
     const station = this.stationInstances.get(id);
     const manifest = this.agentManifests.get(station.agentType);
     const gadget = this.gadgetRegistry.get(station.agentType);
 
-    let component;
-    console.log('gadget', gadget)
+
+
+    let record = this.recordInstances.get(id);
+    if(!record){
+      await this.app.until('recordAdded', id);
+      record = this.recordInstances.get(id);
+    }
+
+
+
+
+    let rootComponent;
+
     if(gadget){
-      component = gadget({ manifest, station });
+
+      let { content, properties } = gadget({ manifest, station });
+        rootComponent = this.widgets.append(content);
+
+        record.subscribe((name, value)=>{
+          if(name in properties && this.widgets.registry.has(properties[name])) this.widgets.registry.get(properties[name]).attributes[name].value = value;
+        });
+
+
     }else{
-    component = `
+    const component = `
       <Panel caption="Basic Example" left="500" top="500" width="200" height="200" horizontalCenter="0" verticalCenter="0">
         <Group left="10" top="10">
           <VGroup gap="5">
@@ -101,23 +124,34 @@ export class PortManagerPlugin extends Plugin {
         </Group>
       </Panel>
       `;
+      rootComponent = this.widgets.append(component);
+
     }
-    console.log('component',component)
 
 
-    const rootComponent = this.widgets.append(component);
 
     rootComponent.element.setAttribute("data-station-id", station.id);
     rootComponent.element.addEventListener("click", () => this.eventDispatch("selectNode", station));
 
+
+
+    // PASS RECORD DATA TO ATTRIBUTES
+    // this.tuneIn(record.get('color', 'green'), v=>path.style.stroke =  this.primaryColorTransform(v) )
+    // for(const property of manifest.node.properties){
+
+    // }
+
+
+
+
+    // INSTALL CONV TOOL ON PORTS
     for (const port of manifest.node.outputs) {
       const id = [station.id, "output", port.id].join(":");
       const portComponent = this.widgets.registry.get(id);
-      // console.log(portComponent)
+      if(!portComponent) continue;
       let previousTool = this.app.selectedTool.value;
       let convenienceTool = "connect";
       const pressingActivity = fromBetweenEvents(portComponent.element, "mousedown", this.svg, "mouseup");
-
       const unsubscribe = pressingActivity.subscribe((isPressing) => {
         if (isPressing) {
           previousTool = this.app.selectedTool.value;

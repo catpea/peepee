@@ -1,6 +1,6 @@
-import { Plugin } from "plugin";
+import { Plugin } from 'plugin';
 
-import { take } from "../../core/Utils.js";
+import { take } from 'utils';
 // import { PersistentMap } from "./PersistentMap.js";
 
 export class PalettePlugin extends Plugin {

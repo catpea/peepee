@@ -2,6 +2,7 @@ import { IconPackPlugin } from "./plugins/IconPackPlugin.js";
 import { PanelComponentPlugin } from "./plugins/PanelPlugin.js";
 import { PortComponentPlugin } from "./plugins/PortPlugin.js";
 import { ButtonComponentPlugin } from "./plugins/ButtonPlugin.js";
+import { TextComponentPlugin } from "./plugins/TextPlugin.js";
 import { GroupComponentPlugin, VGroupComponentPlugin, HGroupComponentPlugin } from "./plugins/LayoutPlugins.js";
 // import { LabelComponentPlugin } from './plugins/LabelPlugin.js';
 import { MouseInteractionPlugin } from "./plugins/MousePlugin.js";
@@ -28,6 +29,7 @@ export class Widgets {
     this.engine.registerComponentPlugin("HGroup", new HGroupComponentPlugin());
     this.engine.registerComponentPlugin("Port", new PortComponentPlugin());
     this.engine.registerComponentPlugin("Button", new ButtonComponentPlugin());
+    this.engine.registerComponentPlugin("Text", new TextComponentPlugin());
     // this.widgetEngine.registerComponentPlugin('Label', new LabelComponentPlugin());
 
     // Register interaction plugins

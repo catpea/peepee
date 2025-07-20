@@ -16,6 +16,14 @@
       }
       */
 
+      .text {
+
+      .content {
+          font-size: 9px;
+          user-select: none;
+          pointer-events: none;
+        }
+      }
 
       .port {
 

@@ -1,5 +1,6 @@
 {
   "id": "basic/documentation-note",
+  "name": "Note",
   "description": "Note",
   "category": "documentation",
   "subcategory": "notes",
@@ -33,11 +34,13 @@
     "properties": [
 
       {
-        "name": "text",
-        "type": "text",
+        "name": "content",
+        "type": "textarea",
         "label": "Text",
         "description": "text"
       }
+
+
 
 
     ]

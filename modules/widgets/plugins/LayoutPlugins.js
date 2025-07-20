@@ -1,3 +1,4 @@
+import { Signal, combineLatest } from 'signals';
 import { Component } from "../core/Component.js";
 
 // Group Component Plugin
@@ -53,20 +54,54 @@ class VGroupComponent extends Component {
     super(...a);
     const componentAttributes = {
       gap: 4,
+      height: 100,
     };
     this.installAttributeSignals(componentAttributes, { override: false });
   }
   render(parentComponent, parentElement) {
     this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
     this.subscriptions.add(() => this.element.remove()); // destroy element on stop
+    this.listenToAttributeSignals(["left", "top"], (left, top) => this.element.setAttribute("transform", `translate(${left}, ${top})`));
 
     this.element.setAttribute("id", this.id);
     this.element.setAttribute("data-name", this.constructor.name);
+    this.setAttributeSignal(this.element, "height");
 
     const gap = this.attributes.gap.value;
     let yOffset = 0;
 
+
+
+
+
+
+
+
+        const allChildren = combineLatest(...this.children.map(child=>child.attributes.height));
+        allChildren.subscribe(allChildren=>console.log('qqq allChildren', allChildren));
+
+        const allChildrenHeightsSum = allChildren.scan((a,v)=>a+v, 0);
+        allChildrenHeightsSum.subscribe(allChildrenHeightsSum=>console.log('qqq allChildrenHeightsSum', allChildrenHeightsSum));
+
+        const gapSum = new Signal(0);
+        combineLatest(allChildren, this.attributes.gap)
+          .map(([childrenCount, gapSize])=>gapSize*(childrenCount-1)).toSignal(gapSum);
+        gapSum.subscribe(gapSum=>console.log('qqq gapSum', gapSum));
+
+        // const allGaps = combineLatest(...this.children.map(child=>child.attributes.height)).map(c=>c).scan((a,v)=>a+v, 0);
+
+
+
     // Layout children vertically
+
+    combineLatest(...this.children.map(child=>child.attributes.height))
+      .subscribe(children=>{
+        const heightSum = children.reduce((a,v)=>a+v, 0);
+        const gapSum = children.length * this.attributes.gap.value
+        const fullHeight = heightSum+gapSum;
+        console.log('www', fullHeight)
+        this.attributes.height.value = fullHeight;
+      })
 
     this.children.forEach((child, index) => {
       child.render(this, this.element);
@@ -100,6 +135,7 @@ class HGroupComponent extends Component {
   render(parentComponent, parentElement) {
     this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
     this.subscriptions.add(() => this.element.remove()); // destroy element on stop
+    this.listenToAttributeSignals(["left", "top"], (left, top) => this.element.setAttribute("transform", `translate(${left}, ${top})`));
 
     this.element.setAttribute("id", this.id);
     this.element.setAttribute("data-name", this.constructor.name);

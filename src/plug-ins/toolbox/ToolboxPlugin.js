@@ -1,6 +1,6 @@
 import { Plugin } from 'plugin';
 
-import { take } from "../../core/Utils.js";
+import { take } from 'utils';
 import { Signal } from 'signals';
 // import { PersistentMap } from "./PersistentMap.js";
 

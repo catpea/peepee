@@ -1,5 +1,5 @@
 import { Component } from '../core/Component.js';
-import { Signal } from 'signals';
+import { Signal, combineLatest } from 'signals';
 
 export class PanelComponentPlugin {
 
@@ -30,6 +30,7 @@ class PanelComponent extends Component {
 
       left: 0,
       top: 0,
+      bottom: 0,
 
       width: 320,
       height: 200,
@@ -159,9 +160,19 @@ class PanelComponent extends Component {
         this.element.appendChild(contentArea);
 
         // Render children
+
         this.children.forEach(child => {
             child.render(this, contentArea);
         });
+
+      combineLatest(...this.children.map(child=>child.attributes.height), ...this.children.map(child=>child.attributes.top))
+      .subscribe(children=>{
+        const childrenHeightSum = children.reduce((a,v)=>a+v, 0);
+        const gapSum = children.length  * this.attributes.gap.value
+        const fullHeight = this.attributes.titleHeight.value+childrenHeightSum
+        console.log('www2', fullHeight)
+        this.attributes.height.value = fullHeight;
+      })
 
         parentElement.appendChild(this.element);
         return this.element;

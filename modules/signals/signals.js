@@ -174,124 +174,6 @@ class Graph {
     this.#edges.delete(id);
   }
 
-  debug() {
-
-    // Build adjacency list from edges
-    const adjacencyList = new Map();
-    const incomingEdges = new Map();
-
-    // Initialize adjacency list for all nodes
-    for (const nodeId of this.#nodes.keys()) {
-      adjacencyList.set(nodeId, []);
-      incomingEdges.set(nodeId, 0);
-    }
-
-    // Populate adjacency list and count incoming edges
-    for (const [edgeId, edgeData] of this.#edges) {
-      const { from, to, name } = edgeData;
-      if (!adjacencyList.has(from)) adjacencyList.set(from, []);
-      if (!adjacencyList.has(to)) adjacencyList.set(to, []);
-
-      adjacencyList.get(from).push({ to, label: name || "relation" });
-      incomingEdges.set(to, (incomingEdges.get(to) || 0) + 1);
-    }
-
-    // console.log(incomingEdges)
-    // Find root nodes (nodes with no incoming edges)
-    const rootNodes = [];
-    for (const [nodeId, incomingCount] of incomingEdges) {
-      if (incomingCount === 0) {
-        rootNodes.push(nodeId);
-      }
-    }
-
-    // If no root nodes found (circular graph), pick arbitrary starting points
-    if (rootNodes.length === 0 && this.#nodes.size > 0) {
-      rootNodes.push(this.#nodes.keys().next().value);
-    }
-
-    const visited = new Set();
-    const rendering = new Set(); // Track nodes currently being rendered to detect cycles
-    let output = [];
-
-    const renderNode = (nodeId, prefix = "", isLast = true, depth = 0) => {
-      // Prevent infinite recursion on cycles
-      if (rendering.has(nodeId)) {
-        output.push(prefix + (isLast ? "└─ " : "├─ ") + `${nodeId} [CYCLE]`);
-        return;
-      }
-
-      // Prevent excessive depth
-      if (depth > 10) {
-        output.push(prefix + (isLast ? "└─ " : "├─ ") + `${nodeId} [MAX_DEPTH]`);
-        return;
-      }
-
-      rendering.add(nodeId);
-
-      const nodeData = this.#nodes.get(nodeId);
-      const nodeLabel = (nodeData ? `${nodeData.label}` : nodeId ) + ' = ' + nodeData.node.value;
-
-      output.push(prefix + (isLast ? "└─ " : "├─ ") + nodeLabel);
-
-      const children = adjacencyList.get(nodeId) || [];
-      const nextPrefix = prefix + (isLast ? "   " : "│  ");
-
-      children.forEach((child, index) => {
-        const childIsLast = index === children.length - 1;
-        const edgeLabel = child.label !== "relation" ? `[${child.label}]` : "";
-
-        if (edgeLabel) {
-          output.push(nextPrefix + (childIsLast ? "└─ " : "├─ ") + edgeLabel);
-          renderNode(child.to, nextPrefix + (childIsLast ? "   " : "│  "), true, depth + 1);
-        } else {
-          renderNode(child.to, nextPrefix, childIsLast, depth + 1);
-        }
-      });
-
-      rendering.delete(nodeId);
-    };
-
-    // Render all root nodes
-    if (rootNodes.length === 0) {
-      output.push("(empty graph)");
-    } else {
-      rootNodes.forEach((rootId, index) => {
-        const isLastRoot = index === rootNodes.length - 1;
-        renderNode(rootId, "", isLastRoot);
-
-        // Add spacing between multiple root trees
-        if (!isLastRoot) {
-          output.push("");
-        }
-      });
-    }
-
-    // Show any orphaned nodes that weren't reached
-    const reachedNodes = new Set();
-    const collectReached = (nodeId) => {
-      if (reachedNodes.has(nodeId)) return;
-      reachedNodes.add(nodeId);
-      const children = adjacencyList.get(nodeId) || [];
-      children.forEach((child) => collectReached(child.to));
-    };
-
-    rootNodes.forEach(collectReached);
-
-    const orphanedNodes = [...this.#nodes.keys()].filter((id) => !reachedNodes.has(id));
-    if (orphanedNodes.length > 0) {
-      output.push("");
-      output.push("Orphaned nodes:");
-      orphanedNodes.forEach((nodeId, index) => {
-        const isLast = index === orphanedNodes.length - 1;
-        const nodeData = this.#nodes.get(nodeId);
-        const nodeLabel = nodeData ? `${nodeData.label}` : nodeId;
-        output.push((isLast ? "└─ " : "├─ ") + nodeLabel);
-      });
-    }
-
-    console.log(output.join("\n"));
-  }
 }
 
 const graph = new Graph();
@@ -355,59 +237,63 @@ export class Pulse {
 }
 
 export class Signal extends Pulse {
-  map(fn) {
-    return map(this, fn);
-  }
-  filter(fn) {
-    return filter(this, fn);
-  }
-  combineLatest(...signals) {
-    return combineLatest(this, ...signals);
-  }
+  map(fn) { return map(this, fn) }
+  filter(fn) { return filter(this, fn) }
+  combineLatest(...signals) { return combineLatest(this, ...signals) }
+  // flat(...signals) { return combineLatest(this, ...signals) }
+  switchMap(mapperFn) { return switchMap(this, mapperFn) }
+  scan(reducerFn, initialValue) { return scan(this, reducerFn, initialValue) }
+  reduce(reducerFn, initialValue) { return reduce(this, reducerFn, initialValue) }
 
-  ///
-
-  scan(accumulator, seed) {}
   debounce(ms) {}
   delay(ms) {}
   throttle(ms) {}
   merge(signal) {}
 
   // NOTE: to* methods return subscriptions not signals
-  toInnerTextOf(el) {
-    return toInnerTextOf(this, el);
-  }
-
-  toSignal(destination) {
-    return toSignal(this, destination);
-  }
+  toInnerTextOf(el) { return toInnerTextOf(this, el); }
+  toSignal(destination) { return toSignal(this, destination); }
 }
 
 // THIS IS THE MAP FUNCTION, it can be used standalone as map(usernameSignal, v=>`Hello ${v}`),
 // but it looks nicer when you use the method: usernameSignal.map(v=>`Hello ${v}`).subscribe(v=>console.log(v))
 
+export function filter(parent, test) {
+  const child = new Signal(undefined, {name: manifest.filter.name});
+  const subscription = parent.subscribe((v) => { if (test(v)) { child.value = v; } });
+  child.collect(subscription);
+  child.collect(graph.connect(parent.id, child.id, "filter"));
+  return child;
+}
+
 export function map(parent, map) {
   const child = new Signal(undefined, {name: manifest.map.name});
   const subscription = parent.subscribe((v) => (child.value = map(v)));
   child.collect(subscription);
-  const disconnect = graph.connect(parent.id, child.id, "map");
-  child.collect(disconnect);
+  child.collect(graph.connect(parent.id, child.id, "map"));
   return child;
 }
 
-export function filter(parent, test) {
-  const child = new Signal(undefined, {name: manifest.filter.name});
+
+export function scan(parent, reducer, initialValue) {
+  const child = new Signal(initialValue, { name: manifest.scan.name });
   const subscription = parent.subscribe((v) => {
-    if (test(v)) {
-      child.value = v;
-    }
+    console.log('ggg g' , v);
+    child.value = 1;// v.reduce(reducer, initialValue);
   });
   child.collect(subscription);
-  const disconnect = graph.connect(parent.id, child.id, "filter");
-  child.collect(disconnect);
+  child.collect(graph.connect(parent.id, child.id, "scan"));
   return child;
 }
-
+export function reduce(parent, reducer, initialValue) {
+  const child = new Signal(initialValue, { name: manifest.scan.name });
+  const subscription = parent.subscribe((v) => {
+    child.value = v.reduce(reducer, initialValue);
+  });
+  child.collect(subscription);
+  child.collect(graph.connect(parent.id, child.id, "scan"));
+  return child;
+}
 export function combineLatest(...parents) {
   const child = new Signal(undefined,{name: manifest.combineLatest.name});
   const updateCombinedValue = () => {
@@ -417,10 +303,32 @@ export function combineLatest(...parents) {
   };
   const subscriptions = parents.map((signal) => signal.subscribe(updateCombinedValue));
   child.collect(subscriptions);
-  const disconnections = parents.map((parent) => graph.connect(parent.id, child.id, "combineLatest"));
-  child.collect(disconnections);
+  child.collect(parents.map((parent) => graph.connect(parent.id, child.id, "combineLatest")));
   return child;
 }
+
+export function switchMap(parent, mapper) {
+  const child = new Signal(undefined, { name: manifest.switchMap.name });
+  let innerSubscription = null;
+  const parentSubscription = parent.subscribe((v) => {
+  if (innerSubscription) innerSubscription(); // On data from parent Unsubscribe from the previous innerSubscription if it exists
+    const newSignal = mapper(v); // Map the value to a new signal
+    innerSubscription = newSignal.subscribe((newValue) =>  child.value = newValue ); // Subscribe to the new signal
+  });
+  child.collect(innerSubscription); // clean the final one on terminate
+  child.collect(parentSubscription);
+  child.collect(graph.connect(parent.id, child.id, "switchMap"));
+  return child;
+}
+
+
+
+
+
+
+
+
+
 
 // INTEGRATIONS
 
