@@ -1,0 +1,56 @@
+{
+  "id": "basic/documentation-note",
+  "description": "Note",
+  "category": "documentation",
+  "subcategory": "notes",
+
+  "node": {
+    "icon": "sticky",
+
+    "inputs": [
+
+
+    ],
+
+    "outputs": [
+      {
+        "id": "output",
+        "name": "Filtered Image",
+        "description": "Processed image with applied filter",
+        "dataType": "image/*",
+        "mimeTypes": ["image/png", "image/jpeg", "image/webp"],
+        "position": "right",
+        "offset": 30,
+        "color": "#FF6B6B",
+        "shape": "circle",
+        "metadata": {
+          "preserveFormat": true,
+          "quality": "original"
+        }
+      }
+    ],
+
+    "properties": [
+
+      {
+        "name": "text",
+        "type": "text",
+        "label": "Text",
+        "description": "text"
+      }
+
+
+    ]
+  },
+
+  "files": {
+    "main": "index.js",
+    "gui": "gui.js",
+    "documentation": "README.md"
+  },
+
+  "engines": {
+    "*": "*"
+  }
+
+}

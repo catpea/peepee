@@ -4,6 +4,11 @@ export class Plugin {
     this.app.emit(...argv);
   }
 
+  generateId() {
+    const randomChars = (length = 8) => Array.from({ length }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join("");
+    return `${randomChars()}-${randomChars(4)}-${randomChars(4)}-${randomChars(4)}-${randomChars(12)}`;
+  }
+
   listenTo(element, event, callback, options = false) {
     element.addEventListener(event, callback, options);
     const unsubscribe = () => element.removeEventListener(event, callback, options);

@@ -1,4 +1,4 @@
-import { Plugin } from 'plugin';
+import { Plugin } from "plugin";
 
 import { take } from "../../core/Utils.js";
 // import { PersistentMap } from "./PersistentMap.js";
@@ -19,12 +19,10 @@ export class PalettePlugin extends Plugin {
     this.svg = app.svg;
 
     //console.log(this.app.plugins)
-    this.workbenchPlugin = this.app.plugins.get('WorkbenchPlugin');
+    this.workbenchPlugin = this.app.plugins.get("WorkbenchPlugin");
     this.engine = this.workbenchPlugin.engine;
 
-
-
-    this.uiContainerElement = document.querySelector('#ui-container > .start-side');
+    this.uiContainerElement = document.querySelector("#ui-container > .start-side");
     const htmlContent = `
       <div class="palette rounded shadow">
         <div id="palette-list-toolbox" class="palette-body">
@@ -34,26 +32,19 @@ export class PalettePlugin extends Plugin {
     const divElement = document.createElement("div");
     divElement.innerHTML = htmlContent;
     this.uiContainerElement.appendChild(divElement);
-    this.toolListElement = divElement.querySelector('#palette-list-toolbox');
+    this.toolListElement = divElement.querySelector("#palette-list-toolbox");
 
-    if(!this.app.palette) this.app.palette = {};
+    if (!this.app.palette) this.app.palette = {};
 
-    this.app.on('registerAgent', ({name: agentName, data: agentData})=>{
-
-      const id = agentData.id;
-      this.app.palette[agentName] = agentData;
+    this.app.on("registerAgent", (agent) => {
+      this.app.palette[this.generateId()] = agent;
       this.renderAgents();
-
     });
 
-    const testList = 'palette plug person-arms-up airplane-engines alarm backpack bank bandaid beaker box2-heart brightness-high bug cake2 camera capsule cassette cloud cone cpu cup-hot postage speaker moon lightning lightbulb hospital fuel-pump flask-florence floppy eye'.split(' ');
-    for(const name of testList){
-      this.app.emit('registerAgent', {name:`${name}`,   data:{id:`${name}-agent`,   icon:`bi-${name}`, description:`${name} agent`, type:'basic/pass-through' }});
-    }
-
-
-
-
+    this.app.emit("registerAgent", {
+      icon: `bi-sticky`,
+      type: "basic/documentation-note",
+    });
 
     this.app.svg.addEventListener("dragover", (e) => {
       e.preventDefault();
@@ -64,25 +55,17 @@ export class PalettePlugin extends Plugin {
       e.preventDefault();
       const agentType = e.dataTransfer.getData("application/agent-type");
       const agentName = e.dataTransfer.getData("application/agent-name");
-
-
-      const {x,y} = this.engine.clientToWorld(e.clientX, e.clientY);
-
-
-      // this will trigger this.graph.on('nodeAdded...
-      // const node = this.app.graph.addNode({ x , y , type: agentType, label: agentName });
-      const raw = {
-        x,y,
-        // label: agentName,
-        agentType
-      };
-      this.app.emit("stationAdd", raw);
+      const { x, y } = this.engine.clientToWorld(e.clientX, e.clientY);
+      this.eventDispatch("stationAdd", { x, y, agentType });
     });
 
+    this.loadStyleSheet(new URL("./style.css", import.meta.url).href);
 
 
-
-    this.loadStyleSheet(new URL('./style.css', import.meta.url).href);
+    // const testList = 'palette plug person-arms-up airplane-engines alarm backpack bank bandaid beaker box2-heart brightness-high bug cake2 camera capsule cassette cloud cone cpu cup-hot postage speaker moon lightning lightbulb hospital fuel-pump flask-florence floppy eye'.split(' ');
+    // for(const name of testList){
+    //   this.app.emit('registerAgent', { icon:`bi-${name}`, type:'basic/pass-through' });
+    // }
 
   }
 
@@ -91,50 +74,44 @@ export class PalettePlugin extends Plugin {
     this.subscriptions.clear();
   }
 
-
-
-  renderAgents(){
-
+  renderAgents() {
     // clear toolbox
     this.toolListElement.replaceChildren();
 
-    for(const agentList of take(Object.entries(this.app.palette), 3)){
+    for (const agentList of take(Object.entries(this.app.palette), 3)) {
       const row = document.createElement("div");
-      row.classList.add('row')
-      for(const [name, data] of agentList){
+      row.classList.add("row");
+      for (const [id, agent] of agentList) {
         const col = document.createElement("div");
-        col.classList.add('col');
+        col.classList.add("col");
         // col.style.textAlign = 'center';
-        const toolElement = this.renderTool(name, data);
+        const toolElement = this.renderTool(id, agent);
         col.appendChild(toolElement);
         row.appendChild(col);
       }
       this.toolListElement.appendChild(row);
     }
-
-
   } // renderTools
 
-  renderTool(agentName, agentData){
+  renderTool(id, agent) {
+    const agentButton = document.createElement("span");
 
-      const agentButton = document.createElement("span");
+    agentButton.classList.add("agent", "agent-sm");
+    agentButton.setAttribute("id", id);
 
-      agentButton.classList.add('agent', 'agent-sm');
-      agentButton.setAttribute('title', agentData.description);
+    agentButton.setAttribute("draggable", "true");
+    agentButton.addEventListener("dragstart", (e) => {
+      //console.log(e)
+      e.dataTransfer.setData("text/plain", agent.type);
+      e.dataTransfer.setData("application/agent-name", id);
+      e.dataTransfer.setData("application/agent-type", agent.type);
+      e.dataTransfer.effectAllowed = "copy";
+    });
 
-      agentButton.setAttribute("draggable", "true");
-      agentButton.addEventListener("dragstart", (e) => {
-        //console.log(e)
-        e.dataTransfer.setData("text/plain", agentData.type);
-        e.dataTransfer.setData("application/agent-name", agentName);
-        e.dataTransfer.setData("application/agent-type", agentData.type);
-        e.dataTransfer.effectAllowed = "copy";
-      });
-
-      const agentIcon = document.createElement("i");
-      agentButton.classList.add('bi', agentData.icon);
-      agentButton.appendChild(agentIcon);
-      return agentButton;
+    const agentIcon = document.createElement("i");
+    agentButton.classList.add("bi", agent.icon);
+    agentButton.appendChild(agentIcon);
+    return agentButton;
   }
 
 } // class

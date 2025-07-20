@@ -104,7 +104,10 @@ export class AgentManagerPlugin extends Plugin {
 
 
   async fetchClass(agentRoot, basePath, fileName = "index.js") {
-    const url = [window.location.origin, agentRoot, basePath, fileName].join('/');
+
+    // const url = [window.location.origin, agentRoot, basePath, fileName].join('/');
+    const pathnames = window.location.pathname.split('/').filter(o=>o);
+    const url = '/'+ [...pathnames, agentRoot, basePath, fileName].join('/');
     try {
       // Dynamically import the module
       const module = await import(url);

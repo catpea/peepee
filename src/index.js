@@ -19,6 +19,7 @@ import { StationCreatePlugin } from "./plug-ins/station/StationCreatePlugin.js";
 
 import { ManifestManagerPlugin } from "./plug-ins/manifests/ManifestManagerPlugin.js";
 import { AgentManagerPlugin } from "./plug-ins/agent/AgentManagerPlugin.js";
+import { GadgetManagerPlugin } from "./plug-ins/gadget/GadgetManagerPlugin.js";
 import { PortManagerPlugin } from "./plug-ins/ports/PortManagerPlugin.js";
 
 import { GhostLinePlugin } from "./plug-ins/connection/GhostLinePlugin.js";
@@ -28,6 +29,7 @@ import { ConnectionDeletePlugin } from "./plug-ins/connection/ConnectionDeletePl
 import { ConnectionCreatePlugin } from "./plug-ins/connection/ConnectionCreatePlugin.js";
 
 import { RecordsManagerPlugin } from "./plug-ins/records/RecordsManagerPlugin.js";
+
 
 export class SubwayBuilder extends HTMLElement {
   constructor() {
@@ -93,6 +95,7 @@ export class SubwayBuilder extends HTMLElement {
     app.use(new AgentManagerPlugin());
 
     // listen for agents being created, use their manifest to draw ports
+    app.use(new GadgetManagerPlugin());
     app.use(new PortManagerPlugin());
 
     // Connection System

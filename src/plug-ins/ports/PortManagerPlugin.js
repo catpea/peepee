@@ -25,6 +25,9 @@ export class PortManagerPlugin extends Plugin {
     this.stationManager = app.plugins.get("StationManagerPlugin");
     this.stationInstances = this.stationManager.stationInstances;
 
+    this.gadgetManagerPlugin = app.plugins.get("GadgetManagerPlugin");
+    this.gadgetRegistry = this.gadgetManagerPlugin.gadgetRegistry;
+
     this.widgetManagerPlugin = app.plugins.get("WidgetManagerPlugin");
     this.widgets = this.widgetManagerPlugin.widgets;
 
@@ -33,7 +36,7 @@ export class PortManagerPlugin extends Plugin {
 
     this.app.on("stationAgentAdded", (agent) => this.instantiatePorts(agent));
 
-    this.app.on("agentRemoved", (id) => this.destroyPorts(id));
+    // this.app.on("agentRemoved", (id) => this.destroyPorts(id));
     this.app.on("stationRemoved", (id) => this.destroyPorts(id));
 
     this.loadStyleSheet(new URL("./style.css", import.meta.url).href);
@@ -77,11 +80,18 @@ export class PortManagerPlugin extends Plugin {
   }
 
   async instantiatePorts(agent) {
+    console.log('instantiatePorts', agent)
     const { id } = agent;
     const station = this.stationInstances.get(id);
     const manifest = this.agentManifests.get(station.agentType);
+    const gadget = this.gadgetRegistry.get(station.agentType);
 
-    const component = `
+    let component;
+    console.log('gadget', gadget)
+    if(gadget){
+      component = gadget({ manifest, station });
+    }else{
+    component = `
       <Panel caption="Basic Example" left="500" top="500" width="200" height="200" horizontalCenter="0" verticalCenter="0">
         <Group left="10" top="10">
           <VGroup gap="5">
@@ -90,7 +100,11 @@ export class PortManagerPlugin extends Plugin {
           </VGroup>
         </Group>
       </Panel>
-    `;
+      `;
+    }
+    console.log('component',component)
+
+
     const rootComponent = this.widgets.append(component);
 
     rootComponent.element.setAttribute("data-station-id", station.id);

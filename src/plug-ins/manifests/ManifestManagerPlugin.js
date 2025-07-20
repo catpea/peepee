@@ -34,7 +34,9 @@ export class ManifestManagerPlugin extends Plugin {
   }
 
   async fetchManifest(agentRoot, basePath, fileName = "manifest.json") {
-    const url = [window.location.origin, agentRoot, basePath, fileName].join('/');
+    const url = [window.location.href, agentRoot, basePath, fileName].join('/');
+
+
     try {
       const response = await fetch(url); // Replace with your manifest file path
       if (!response.ok) {
