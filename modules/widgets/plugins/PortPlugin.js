@@ -28,7 +28,7 @@ class PortComponent extends Component {
       height: 16,
 
       fontSize: 10,
-      gap: 10,
+      gap: 5,
       rx: 2,
 
       textAlign: "center",

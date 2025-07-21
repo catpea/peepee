@@ -1,0 +1,38 @@
+{
+  "application/javascript": {
+    "types": {
+      "string": {
+        "description": "A sequence of characters.",
+        "example": "\"Hello, World!\""
+      },
+      "number": {
+        "description": "A numeric value, can be an integer or a floating-point.",
+        "example": "42"
+      },
+      "boolean": {
+        "description": "A true or false value.",
+        "example": "true"
+      },
+      "object": {
+        "description": "A collection of key-value pairs.",
+        "example": "{\"key\": \"value\"}"
+      },
+      "array": {
+        "description": "An ordered list of values.",
+        "example": "[1, 2, 3]"
+      },
+      "function": {
+        "description": "A callable object that can execute code.",
+        "example": "function() { return 'Hello!'; }"
+      },
+      "null": {
+        "description": "A special value representing the absence of any object value.",
+        "example": "null"
+      },
+      "undefined": {
+        "description": "A variable that has been declared but has not yet been assigned a value.",
+        "example": "undefined"
+      }
+    }
+  }
+}

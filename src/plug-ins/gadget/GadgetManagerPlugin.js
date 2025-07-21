@@ -28,8 +28,10 @@ export class GadgetManagerPlugin extends Plugin {
 
 
   async instantiateGadget(manifest){
+    if(!manifest.files.gui) return;
     if(!this.gadgetRegistry.has(manifest.id)){
-      const gadget = await this.fetchGadget('agents', manifest.id, manifest.files.gui);
+      const content = await this.fetchGadget('agents', manifest.id, manifest.files.gui);
+      const gadget = {id:manifest.id, content }
       this.gadgetRegistry.set(manifest.id, gadget);
     }
     this.eventDispatch('gadgetAdded', this.gadgetRegistry.get(manifest.id));

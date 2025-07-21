@@ -57,7 +57,7 @@ export class ToolboxPlugin extends Plugin {
 
     this.app.emit("registerTool", { name: "select", data: { id: "select-tool", icon: "bi-cursor", iconSelected: "bi-cursor-fill", description: "select item" } });
     this.app.emit("registerTool", { name: "group", data: { id: "group-tool", icon: "bi-pentagon", iconSelected: "bi-pentagon-fill", description: "group items" } });
-    this.app.emit("registerTool", { name: "group2", data: { id: "group-tool", icon: "bi-wrench", iconSelected: "bi-wrench-fill", description: "group items" } });
+    // this.app.emit("registerTool", { name: "group2", data: { id: "group-tool", icon: "bi-wrench", iconSelected: "bi-wrench-fill", description: "group items" } });
 
     // this.app.emit('registerTool', {name:'interact', data:{id:'interact-tool', icon:'bi-hand-index-thumb', iconSelected:'bi-hand-index-fill', description:'interact with item' }});
     // this.app.emit('registerTool', {name:'comment',  data:{id:'interact-tool', icon:'bi-pin-angle', iconSelected:'bi-pin-fill', description:'comment tool' }});

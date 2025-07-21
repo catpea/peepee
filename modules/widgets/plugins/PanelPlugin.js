@@ -30,6 +30,7 @@ class PanelComponent extends Component {
 
       left: 0,
       top: 0,
+
       bottom: 0,
 
       width: 320,
@@ -164,6 +165,7 @@ class PanelComponent extends Component {
         this.children.forEach(child => {
             child.render(this, contentArea);
         });
+
 
       combineLatest(...this.children.map(child=>child.attributes.height), ...this.children.map(child=>child.attributes.top))
       .subscribe(children=>{

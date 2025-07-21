@@ -38,6 +38,13 @@ export class PortManagerPlugin extends Plugin {
     this.engine = this.workbenchPlugin.engine;
 
     this.app.on("stationAgentAdded", (agent) => this.instantiatePorts(agent));
+    // this.app.on("gadgetAdded", (gadget) => this.instantiatePorts(gadget));
+
+    // 1. await stationAgentAdded
+    // 2. await gadget with the station.agentTYpe
+    // 3. call instantiatePorts
+
+
 
     // this.app.on("agentRemoved", (id) => this.destroyPorts(id));
     this.app.on("stationRemoved", (id) => this.destroyPorts(id));
@@ -82,13 +89,25 @@ export class PortManagerPlugin extends Plugin {
     this.eventDispatch("portAdded", port);
   }
 
-  async instantiatePorts(agent) {
+  async instantiatePorts({id}) {
 
+    console.log('instantiatePorts', id)
 
-    const { id } = agent;
+    const agent = this.agentInstances.get(id);
     const station = this.stationInstances.get(id);
     const manifest = this.agentManifests.get(station.agentType);
-    const gadget = this.gadgetRegistry.get(station.agentType);
+
+
+
+    let gadgetInstance = this.gadgetRegistry.get(id);
+    if(!gadgetInstance){
+      await this.app.until('gadgetAdded', station.agentType);
+      gadgetInstance = this.gadgetRegistry.get(station.agentType);
+    }
+
+    if(!gadgetInstance) throw new Error(`id ${id} required a gui gadget manifest of type ${station.agentType}`)
+
+    // const gadgetInstance = this.gadgetRegistry.get(station.agentType);
 
 
 
@@ -103,30 +122,37 @@ export class PortManagerPlugin extends Plugin {
 
     let rootComponent;
 
-    if(gadget){
-
-      let { content, properties } = gadget({ manifest, station });
+    if(gadgetInstance){
+      console.log('gadgetInstance', gadgetInstance)
+      let { content, properties } = gadgetInstance.content({ manifest, station });
         rootComponent = this.widgets.append(content);
 
         record.subscribe((name, value)=>{
           if(name in properties && this.widgets.registry.has(properties[name])) this.widgets.registry.get(properties[name]).attributes[name].value = value;
         });
 
-
-    }else{
-    const component = `
-      <Panel caption="Basic Example" left="500" top="500" width="200" height="200" horizontalCenter="0" verticalCenter="0">
-        <Group left="10" top="10">
-          <VGroup gap="5">
-            ${manifest.node.inputs.map((port) => `<Port id="${[station.id, "input", port.id].join(":")}" group="${station.id}" type="input" caption="${port.id}" width="180"/>`).join()}
-            ${manifest.node.outputs.map((port) => `<Port id="${[station.id, "output", port.id].join(":")}" group="${station.id}" type="output" caption="${port.id}" width="180"/>`).join()}
-          </VGroup>
-        </Group>
-      </Panel>
-      `;
-      rootComponent = this.widgets.append(component);
-
     }
+
+
+    // }else{
+    // const component = `
+    //   <Panel caption="UI Not Found" left="500" top="500" width="200" height="200" horizontalCenter="0" verticalCenter="0">
+    //   <Text content="No Gadget"></Text>
+    //   </Panel>
+    //   `;
+    // // const component = `
+    // //   <Panel caption="Basic Example" left="500" top="500" width="200" height="200" horizontalCenter="0" verticalCenter="0">
+    // //     <Group left="10" top="10">
+    // //       <VGroup gap="5">
+    // //         ${manifest.node.inputs.map((port) => `<Port id="${[station.id, "input", port.id].join(":")}" group="${station.id}" type="input" caption="${port.id}" width="180"/>`).join()}
+    // //         ${manifest.node.outputs.map((port) => `<Port id="${[station.id, "output", port.id].join(":")}" group="${station.id}" type="output" caption="${port.id}" width="180"/>`).join()}
+    // //       </VGroup>
+    // //     </Group>
+    // //   </Panel>
+    // //   `;
+    //   rootComponent = this.widgets.append(component);
+
+    // }
 
 
 
@@ -151,7 +177,7 @@ export class PortManagerPlugin extends Plugin {
       if(!portComponent) continue;
       let previousTool = this.app.selectedTool.value;
       let convenienceTool = "connect";
-      const pressingActivity = fromBetweenEvents(portComponent.element, "mousedown", this.svg, "mouseup");
+      const pressingActivity = fromBetweenEvents(portComponent.portSocket, "mousedown", this.svg, "mouseup");
       const unsubscribe = pressingActivity.subscribe((isPressing) => {
         if (isPressing) {
           previousTool = this.app.selectedTool.value;

@@ -18,7 +18,7 @@ export class StationCreatePlugin extends Plugin {
     this.stationManager = this.app.plugins.get('StationManagerPlugin');
     this.stationInstances = this.stationManager.stationInstances;
 
-    this.app.emit('registerTool', {name:'create',  data:{id:'create-tool',  icon:'bi-node-plus', iconSelected:'bi-node-plus-fill', description:'create items' }});
+    // this.app.emit('registerTool', {name:'create',  data:{id:'create-tool',  icon:'bi-node-plus', iconSelected:'bi-node-plus-fill', description:'create items' }});
 
     this.app.on('stationAdd', raw => this.stationAdd(raw) );
     this.app.on('stationRestore', deserialized => this.stationRestore(deserialized) );

@@ -1,0 +1,47 @@
+{
+  "id": "basic/simple-signal",
+  "name": "Signal",
+  "description": "Signal",
+  "category": "variable",
+  "subcategory": "reactive",
+
+  "node": {
+    "icon": "broadcast",
+
+    "inputs": [
+      {
+        "id": "input",
+        "name": "Input Value",
+        "description": "Value to set",
+        "allow": ["applicaion/javascript+string"]
+      }
+    ],
+
+    "outputs": [
+      {
+        "id": "output",
+        "name": "Signal",
+        "description": "This signal"
+      }
+    ],
+
+    "properties": [
+      {
+        "name": "value",
+        "type": "textarea",
+        "label": "Value",
+        "description": "value of the signal"
+      }
+    ]
+  },
+
+  "files": {
+    "main": "index.js",
+    "gui": "gui.js",
+    "documentation": "README.md"
+  },
+
+  "engines": {
+    "*": "*"
+  }
+}

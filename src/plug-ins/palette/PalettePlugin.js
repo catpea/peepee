@@ -41,10 +41,8 @@ export class PalettePlugin extends Plugin {
       this.renderAgents();
     });
 
-    this.app.emit("registerAgent", {
-      icon: `bi-sticky`,
-      type: "basic/documentation-note",
-    });
+    this.app.emit("registerAgent", { icon: `bi-sticky`, type: "basic/documentation-note", });
+    this.app.emit("registerAgent", { icon: `bi-broadcast`, type: "basic/simple-signal", });
 
     this.app.svg.addEventListener("dragover", (e) => {
       e.preventDefault();

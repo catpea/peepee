@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-class HTTPFetchNode extends EventEmitter {
+class HTTPFetchAgent extends EventEmitter {
     constructor() {
         super();
         this.on('input', packet => this.process(packet));

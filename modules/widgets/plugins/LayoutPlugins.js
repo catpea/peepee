@@ -16,6 +16,9 @@ class GroupComponent extends Component {
     const componentAttributes = {
       left: 0,
       top: 0,
+      gap: 5,
+      height: 100,
+
     };
     this.installAttributeSignals(componentAttributes, { override: false });
   }
@@ -53,6 +56,8 @@ class VGroupComponent extends Component {
   constructor(...a) {
     super(...a);
     const componentAttributes = {
+            left: 0,
+      top: 0,
       gap: 4,
       height: 100,
     };
@@ -78,12 +83,21 @@ class VGroupComponent extends Component {
 
 
         const allChildren = combineLatest(...this.children.map(child=>child.attributes.height));
-        const allChildrenHeightsSum = allChildren.scan((a,v)=>a+v, 0);
-        const gapSum = combineLatest(allChildren, this.attributes.gap).map(([ childrenCount, gapSize])=>gapSize*(childrenCount.length ))
-        const fullHeight = combineLatest(allChildrenHeightsSum, gapSum).map(([allChildrenHeightsSum, gapSum])=>allChildrenHeightsSum+gapSum)
 
-        fullHeight.subscribe(height=>this.attributes.height.value = height);
+        const sumOfAllGaps = combineLatest(allChildren, this.attributes.gap)
+          .map(([ children, sizeOfGap])=>[children.length, sizeOfGap])
+          .map(([ numberOfChildren, sizeOfGap])=>numberOfChildren*sizeOfGap)
 
+        const sumOfAllHeights = allChildren
+          .scan((total, current)=>total+current, 0);
+
+        const totalHeight = combineLatest(sumOfAllHeights, sumOfAllGaps)
+          .scan((total, current)=>total+current, 0);
+
+        totalHeight.subscribe(value=>this.attributes.height.value = value);
+
+          // .scan((a,v)=>a+v, 0);
+          // .map(([allChildrenHeightsSum, gapSum])=>allChildrenHeightsSum+gapSum)
     // Layout children vertically
 
     // combineLatest(...this.children.map(child=>child.attributes.height))
@@ -123,7 +137,10 @@ class HGroupComponent extends Component {
   constructor(...a) {
     super(...a);
     const componentAttributes = {
+            left: 0,
+      top: 0,
       gap: 4,
+      height: 100,
     };
     this.installAttributeSignals(componentAttributes, { override: false });
   }

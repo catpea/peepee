@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 
-export default class PassThrough extends EventEmitter {
+export default class PassThroughAgent extends EventEmitter {
   id;
   constructor({id}){
     super()

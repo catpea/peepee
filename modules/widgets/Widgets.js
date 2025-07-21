@@ -36,17 +36,17 @@ export class Widgets {
     const mousePlugin = new MouseInteractionPlugin();
     this.engine.use(mousePlugin);
 
-    const example = `
-        <Panel caption="Basic Example" left="500" top="500" width="320" height="200" horizontalCenter="0" verticalCenter="0">
-          <Group left="10" top="10">
-            <VGroup gap="5">
-              <Port name="input"/>
-              <Button caption="Click Me" />
-              <Button caption="Or Me" />
-            </VGroup>
-          </Group>
-        </Panel>
-      `;
+    // const example = `
+    //     <Panel caption="Basic Example55555" left="500" top="500" width="320" height="200" horizontalCenter="0" verticalCenter="0">
+    //       <Group left="10" top="10">
+    //         <VGroup gap="5">
+    //           <Port name="input"/>
+    //           <Button caption="Click Me" />
+    //           <Button caption="Or Me" />
+    //         </VGroup>
+    //       </Group>
+    //     </Panel>
+    //   `;
 
     // <Label caption="Hello World!" />
 
