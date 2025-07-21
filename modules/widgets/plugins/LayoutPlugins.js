@@ -78,30 +78,25 @@ class VGroupComponent extends Component {
 
 
         const allChildren = combineLatest(...this.children.map(child=>child.attributes.height));
-        allChildren.subscribe(allChildren=>console.log('qqq allChildren', allChildren));
-
         const allChildrenHeightsSum = allChildren.scan((a,v)=>a+v, 0);
-        allChildrenHeightsSum.subscribe(allChildrenHeightsSum=>console.log('qqq allChildrenHeightsSum', allChildrenHeightsSum));
+        const gapSum = combineLatest(allChildren, this.attributes.gap).map(([ childrenCount, gapSize])=>gapSize*(childrenCount.length ))
+        const fullHeight = combineLatest(allChildrenHeightsSum, gapSum).map(([allChildrenHeightsSum, gapSum])=>allChildrenHeightsSum+gapSum)
 
-        const gapSum = new Signal(0);
-        combineLatest(allChildren, this.attributes.gap)
-          .map(([childrenCount, gapSize])=>gapSize*(childrenCount-1)).toSignal(gapSum);
-        gapSum.subscribe(gapSum=>console.log('qqq gapSum', gapSum));
-
-        // const allGaps = combineLatest(...this.children.map(child=>child.attributes.height)).map(c=>c).scan((a,v)=>a+v, 0);
-
-
+        fullHeight.subscribe(height=>this.attributes.height.value = height);
 
     // Layout children vertically
 
-    combineLatest(...this.children.map(child=>child.attributes.height))
-      .subscribe(children=>{
-        const heightSum = children.reduce((a,v)=>a+v, 0);
-        const gapSum = children.length * this.attributes.gap.value
-        const fullHeight = heightSum+gapSum;
-        console.log('www', fullHeight)
-        this.attributes.height.value = fullHeight;
-      })
+    // combineLatest(...this.children.map(child=>child.attributes.height))
+    //   .subscribe(children=>{
+    //     const heightSum = children.reduce((a,v)=>a+v, 0);
+    //     const gapSum = children.length * this.attributes.gap.value
+    //     const fullHeight = heightSum+gapSum;
+    //     console.log('hhh fullHeight-master heightSum', heightSum);
+    //     console.log('hhh fullHeight-master gapSum', gapSum);
+    //     console.log('hhh fullHeight-master', fullHeight);
+
+    //     // this.attributes.height.value = fullHeight;
+    //   })
 
     this.children.forEach((child, index) => {
       child.render(this, this.element);

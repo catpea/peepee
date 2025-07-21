@@ -278,8 +278,8 @@ export function map(parent, map) {
 export function scan(parent, reducer, initialValue) {
   const child = new Signal(initialValue, { name: manifest.scan.name });
   const subscription = parent.subscribe((v) => {
-    console.log('ggg g' , v);
-    child.value = 1;// v.reduce(reducer, initialValue);
+    // console.log('ggg g' , v);
+    child.value = v.reduce(reducer, initialValue);
   });
   child.collect(subscription);
   child.collect(graph.connect(parent.id, child.id, "scan"));
