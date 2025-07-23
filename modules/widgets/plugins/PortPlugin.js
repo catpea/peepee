@@ -17,6 +17,7 @@ class PortComponent extends Component {
 
     const componentAttributes = {
       caption: "Port",
+      name: "port",
 
       offset: 10,
       type: 'input',
@@ -90,11 +91,12 @@ class PortComponent extends Component {
     this.setAttributeSignal(portSocket, "r", "socketRadius");
 
     portSocket.setAttribute("data-port-id", [this.attributes.group, this.attributes.type, this.attributes.id].join(':'));
-    portSocket.setAttribute("data-port-name", [this.attributes.type, this.attributes.id].join(':'));
+    // portSocket.setAttribute("data-port-name", [this.attributes.type, this.attributes.id].join(':'));
     portSocket.setAttribute("data-station-id", this.attributes.group);
 
     this.listenToAttributeSignals([ "id" ], ( id ) => portSocket.setAttribute("data-port-id", id ));
-    this.listenToAttributeSignals([ "type", "id" ], ( type, id ) => portSocket.setAttribute("data-port-name", [ type, id ].join(':')));
+    this.listenToAttributeSignals([ "name" ], ( name ) => portSocket.setAttribute("data-port-name", name ));
+    // this.listenToAttributeSignals([ "type", "id" ], ( type, id ) => portSocket.setAttribute("data-port-name", [ type, id ].join(':')));
     this.listenToAttributeSignals([ "group" ], ( group ) => portSocket.setAttribute("data-station-id", group ));
 
     this.element.appendChild(portSocket);
@@ -134,7 +136,7 @@ class PortComponent extends Component {
     this.listenToAttributeSignals(["textAlign", "width"], (textAlign, width) => (this.attributes.captionTextX.value = textAlign === "center" ? width / 2 : 1));
     this.listenToAttributeSignals(["height", "fontSize"], (height, fontSize) => (this.attributes.captionTextY.value = height / 2 + fontSize / 3));
     this.setAttributeSignal(portCaption, "font-size", "fontSize");
-    this.listenToAttributeSignals("caption", (caption) => (portCaption.textContent = caption));
+    this.listenToAttributeSignals("name", (name) => (portCaption.textContent = name));
     this.element.appendChild(portCaption);
 
     // Measure the width of the port caption and update the component's width attribute

@@ -1,11 +1,15 @@
 import { EventEmitter } from "events";
 
-export default class NoteAgent extends EventEmitter {
+export default class CombineLatestAgent extends EventEmitter {
+
   id;
   constructor({id}){
     super()
     this.id = id;
   }
+
+
+
 
   async start(){
     console.log('Start', this.constructor.name)

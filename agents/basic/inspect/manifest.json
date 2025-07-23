@@ -1,0 +1,43 @@
+{
+  "id": "basic/inspect",
+  "name": "Inspect",
+  "description": "Inspect Data",
+  "category": "debug",
+  "subcategory": "analyze",
+
+  "node": {
+    "icon": "sticky",
+
+    "inputs": [
+      {
+        "id": "input",
+        "name": "Input Value",
+        "description": "Value to set",
+        "allow": ["applicaion/javascript+string"]
+      }
+    ],
+
+    "outputs": [
+       {
+        "id": "output",
+        "name": "output Value",
+        "description": "Value to set",
+        "allow": ["applicaion/javascript+string"]
+      }
+    ],
+
+    "properties": [
+    ]
+  },
+
+  "files": {
+    "main": "index.js",
+    "gui": "gui.js",
+    "documentation": "README.md"
+  },
+
+  "engines": {
+    "*": "*"
+  }
+
+}

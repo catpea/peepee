@@ -17,7 +17,7 @@ export default class ConnectionAgent extends EventEmitter {
     for (const { fromEvent, toEvent, transformer } of this.mapping) {
       this.#connect(fromEvent, toEvent, transformer);
     }
-    console.log('AGENT START', this.constructor.name)
+    console.log('AGENT START', this.constructor.name, this.mapping,  this.fromEmitter, this.toEmitter,)
   }
 
   async stop() {
@@ -28,10 +28,15 @@ export default class ConnectionAgent extends EventEmitter {
 
   // Private Helpers
   #connect(fromEvent, toEvent, transformer = (data) => data) {
+
     const handler = (data) => {
+
       const transformedData = transformer(data);
+      console.log(`${this.constructor.name} sending transformedData`, {fromEvent, toEvent, transformedData})
       this.toEmitter.emit(toEvent, transformedData);
+
     };
+    console.log('transformedData', this.fromEmitter, fromEvent )
     this.fromEmitter.on(fromEvent, handler);
     this.connections.set(`${fromEvent}->${toEvent}`, handler);
   }

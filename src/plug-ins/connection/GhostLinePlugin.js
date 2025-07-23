@@ -53,14 +53,8 @@ export class GhostLinePlugin extends Plugin {
     if (!e.target.classList.contains("port-socket")) return;
 
     const fromPortId = e.target.dataset.portId;
-    //console.warn('fromPortId', fromPortId);
-
     const fromPort = this.portInstances.get(fromPortId);
-    console.warn('fromPort', fromPort);
-
     const fromPortName = fromPort.name;
-    //console.warn('fromPortName', fromPortName);
-
     const fromStationId = e.target.dataset.stationId;
     const fromStation = this.portInstances.get(fromPortId);
 
@@ -99,6 +93,8 @@ export class GhostLinePlugin extends Plugin {
       const toStationId = e.target.dataset.stationId;
       const toPortId = e.target.dataset.portId;
       const toPortName = e.target.dataset.portName;
+
+
       if (toPortId !== this.fromPortId) {
 
         // this.app.emit("beforeConnectionCreate", { from: this.fromStationId, to: toStationId });

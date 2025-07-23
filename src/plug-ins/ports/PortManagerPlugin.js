@@ -59,7 +59,8 @@ export class PortManagerPlugin extends Plugin {
 
   createPort(station, kind, input) {
     const id = [station.id, kind, input.id].join(":");
-    const name = [kind, input.id].join(":");
+    // const name = [kind, input.id].join(":");
+    const name = [input.id].join(":");
 
     const portComponent = this.widgets.registry.get(id);
     if (!portComponent) throw new Error(`Failed to locate component ${id} in component registry, does it have a valid id?`);
@@ -128,7 +129,7 @@ export class PortManagerPlugin extends Plugin {
         rootComponent = this.widgets.append(content);
 
         record.subscribe((name, value)=>{
-          if(name in properties && this.widgets.registry.has(properties[name])) this.widgets.registry.get(properties[name]).attributes[name].value = value;
+          if (this.widgets.registry.has(properties[name])) this.widgets.registry.get(properties[name]).attributes[name].value = value;
         });
 
     }

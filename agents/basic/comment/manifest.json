@@ -1,6 +1,6 @@
 {
-  "id": "basic/documentation-note",
-  "name": "Note",
+  "id": "basic/comment",
+  "name": "Comment",
   "description": "Note",
   "category": "documentation",
   "subcategory": "notes",
