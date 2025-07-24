@@ -23,19 +23,23 @@ export class PersistentMap extends EventEmitter {
     this._loadKeys();
 
     // If initial data provided, populate the map
-    if (data) {
-      if (data instanceof Map) {
-        for (let [key, value] of data) {
-          this.set(key, value);
-        }
-      } else if (typeof data === 'object' && data !== null) {
-        for (let [key, value] of Object.entries(data)) {
-          this.set(key, value);
-        }
-      }
-    }
+    if (data) this.import(data);
       this.emit('loaded', this);
 
+  }
+
+  import(data){
+      if (data) {
+        if (data instanceof Map) {
+          for (let [key, value] of data) {
+            this.set(key, value);
+          }
+        } else if (typeof data === 'object' && data !== null) {
+          for (let [key, value] of Object.entries(data)) {
+            this.set(key, value);
+          }
+        }
+      }
   }
 
   _loadKeys() {

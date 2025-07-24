@@ -21,6 +21,8 @@ export class DatabasePlugin extends Plugin {
 
     this.startRestore();
     // this.app.on('startRestore', ()=>this.startRestore())
+    this.app.on("fileSave", () => this.fileSave());
+    this.app.on("fileOpen", () => this.fileOpen());
   }
 
   stop() {
@@ -31,7 +33,6 @@ export class DatabasePlugin extends Plugin {
   startRestore() {
     //NOTICE: station gets {id, type} | metadata loads based on type | propertyKeys become available | recordStorage can now be pulled by key
 
-
     const stationAggregator = new EventAggregator();
     stationAggregator.define("stationReady", {
       events: [
@@ -40,7 +41,7 @@ export class DatabasePlugin extends Plugin {
           // filter: (record, station) => record.id === station.id,
           filter: (record, station) => {
             //console.log(record, station)
-            return record.id === station.id
+            return record.id === station.id;
           },
         },
       ],
@@ -48,11 +49,6 @@ export class DatabasePlugin extends Plugin {
     });
     const restoreStation = (station) => stationAggregator.start("stationReady", station.id, station);
     this.app.on("recordRestored", (port) => stationAggregator.emit("recordRestored", port)); // drive data into the aggreaagator
-
-
-
-
-
 
     this.stations = new PersistentMap(null, {
       prefix: "pishposh-stations",
@@ -65,7 +61,6 @@ export class DatabasePlugin extends Plugin {
           if (!records.has(id)) records.set(id, {});
           this.app.emit("stationRestore", station);
         }
-
       },
     });
 
@@ -74,21 +69,8 @@ export class DatabasePlugin extends Plugin {
     this.app.on("stationRemoved", (id) => this.stations.delete(id));
 
     // this.app.on("stationAdded", (data) => records.set(data.id, {}));
-    this.app.on("stationAdded", (data) => this.app.emit('recordAdd', data) );
-    this.app.on("stationRemoved", (id) => this.app.emit('recordRemove', id));
-
-
-
-
-
-
-
-
-
-
-
-
-
+    this.app.on("stationAdded", (data) => this.app.emit("recordAdd", data));
+    this.app.on("stationRemoved", (id) => this.app.emit("recordRemove", id));
 
     const connectionAggregator = new EventAggregator();
     connectionAggregator.define("connectionReady", {
@@ -99,12 +81,11 @@ export class DatabasePlugin extends Plugin {
         // },
         {
           eventType: "recordRestored",
-            filter: (record, station) => {
-              //console.log(record, station)
-            return record.id === station.id
+          filter: (record, station) => {
+            //console.log(record, station)
+            return record.id === station.id;
           },
         },
-
 
         {
           eventType: "portAdded",
@@ -124,12 +105,10 @@ export class DatabasePlugin extends Plugin {
     this.app.on("portAdded", (port) => connectionAggregator.emit("portAdded", port)); // drive data into the aggreaagator
     this.app.on("recordRestored", (port) => connectionAggregator.emit("recordRestored", port)); // drive data into the aggreaagator
 
-
     this.connections = new PersistentMap(null, {
       prefix: "pishposh-connections",
       onRestored: (db) => db.forEach(restoreConnection),
     });
-
 
     this.app.on("connectionAdded", (data) => this.connections.set(data.id, data.serialize()));
     this.app.on("connectionUpdated", (data) => this.connections.set(data.id, data.serialize()));
@@ -138,24 +117,72 @@ export class DatabasePlugin extends Plugin {
     // this.app.on("connectionAdded", (data) => records.set(data.id, {}));
     // this.app.on("connectionRemoved", (id) => records.delete(id));
 
+    this.app.on("connectionAdded", (data) => this.app.emit("recordAdd", data));
+    this.app.on("connectionRemoved", (id) => this.app.emit("recordRemove", id));
 
-    this.app.on("connectionAdded", (data) => this.app.emit('recordAdd', data) );
-    this.app.on("connectionRemoved", (id) => this.app.emit('recordRemove', id));
-
-
-
-       // keys for records are found in agent manifest files
+    // keys for records are found in agent manifest files
     const records = new PersistentMap(null, { prefix: "pishposh-records", onRestored: (db) => db.forEach((v, k) => this.app.emit("recordRestore", v)) });
     this.records = records;
-    this.app.on("recordAdded",   (data) => this.records.set(data.id, data.serialize()));
+    this.app.on("recordAdded", (data) => this.records.set(data.id, data.serialize()));
     //this.app.on("recordAdded",   (data) => console.log('recordAdded this.records.set', data.id, data.serialize()) );
     this.app.on("recordUpdated", (data) => this.records.set(data.id, data.serialize()));
     this.app.on("recordRemoved", (id) => this.records.delete(id));
-
-
-
-
-
-
   } // start restore
+
+  async fileOpen() {
+    const json = await this.fileOpenJson();
+
+    this.stations.clear();
+    this.connections.clear();
+    this.records.clear();
+
+    console.warn('TODO: Ensure that loaded stations, connections, agents, gadgets, -manifests, ports, property in properties pane are stopped.')
+
+    this.stations.import(json.stations);
+    this.connections.import(json.connections);
+    this.records.import(json.records);
+
+    location.reload()
+
+  }
+
+  fileSave() {
+    const myData = { stations: this.stations.toJSON(), connections: this.connections.toJSON(), records: this.records.toJSON() };
+    const jsonString = JSON.stringify(myData, null, 2);
+    this.fileSaveJsonFS(jsonString, "project.json");
+  }
+
+  async fileOpenJson() {
+    const [handle] = await window.showOpenFilePicker({
+      types: [
+        {
+          description: "JSON Files",
+          accept: { "application/json": [".json"] },
+        },
+      ],
+    });
+
+    const file = await handle.getFile();
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    console.log("Loaded JSON:", data);
+    return data;
+  }
+
+  async fileSaveJsonFS(jsonString, fileName = "project.json") {
+    const fileHandle = await window.showSaveFilePicker({
+      suggestedName: fileName,
+      types: [
+        {
+          description: "JSON File",
+          accept: { "application/json": [".json"] },
+        },
+      ],
+    });
+
+    const writable = await fileHandle.createWritable();
+    await writable.write(jsonString);
+    await writable.close();
+  }
 }

@@ -1,5 +1,5 @@
 .palette {
-  --palette-spacing: .1rem;
+  --palette-spacing: 1px;
 
   z-index: 1000;
 
@@ -15,10 +15,10 @@
 .palette-body {
 
   .row {
-    padding: 0 0 var(--palette-spacing);
+    padding: var(--palette-spacing);
   }
   .col {
-    padding: 0 var(--palette-spacing) ;
+    padding: var(--palette-spacing) ;
   }
 
 

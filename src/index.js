@@ -1,9 +1,11 @@
 // SubwayBuilder.js
 import { Application } from "./Application.js";
+import { PolyfillManagerPlugin } from "./plug-ins/polyfills/PolyfillManagerPlugin.js";
 
 import { ColorManagerPlugin } from "./plug-ins/theme/ColorManagerPlugin.js";
 
 import { WidgetManagerPlugin } from "./plug-ins/widget/WidgetManagerPlugin.js";
+import { MenuPlugin } from "./plug-ins/menu/MenuPlugin.js";
 import { ToolboxPlugin } from "./plug-ins/toolbox/ToolboxPlugin.js";
 import { PropertiesPlugin } from "./plug-ins/properties/PropertiesPlugin.js";
 import { PalettePlugin } from "./plug-ins/palette/PalettePlugin.js";
@@ -72,10 +74,16 @@ export class SubwayBuilder extends HTMLElement {
     // const svg = this.querySelector('#svg-container');
     const svg = this.querySelector("#main-svg");
     const app = new Application(svg);
+    app.actions = {};
+    globalThis.app = app;
     Object.freeze(app);
+
+    app.use(new PolyfillManagerPlugin());
 
     app.use(new ColorManagerPlugin());
     app.use(new WidgetManagerPlugin());
+
+    app.use(new MenuPlugin());
     app.use(new ToolboxPlugin());
     app.use(new WorkbenchPlugin());
 

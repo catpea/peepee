@@ -1,20 +1,24 @@
-.toolbox {
-  --toolbox-spacing: 1px;
+.menu {
+  --menubox-spacing: 1px;
 
   z-index: 1000;
 
-  padding: var(--toolbox-spacing);
+  padding: var(--menubox-spacing);
+
   background: var(--base02);
   border: 1px solid var(--border);
-  margin-bottom: 1rem;
 
-.toolbox-body {
+  margin-bottom: 1rem;
+}
+
+.menubox-body {
 
   .row {
-    padding: var(--toolbox-spacing);
+
+    padding: var(--menubox-spacing);
   }
   .col {
-    padding: var(--toolbox-spacing) ;
+    padding: var(--menubox-spacing) ;
   }
 
   .btn {
