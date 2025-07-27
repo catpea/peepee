@@ -1,6 +1,7 @@
 // SubwayBuilder.js
 import { Application } from "./Application.js";
 import { PolyfillManagerPlugin } from "./plug-ins/polyfills/PolyfillManagerPlugin.js";
+import { EventCorrelatorPlugin } from "./plug-ins/correlator/EventCorrelatorPlugin.js";
 
 import { ColorManagerPlugin } from "./plug-ins/theme/ColorManagerPlugin.js";
 
@@ -32,7 +33,6 @@ import { ConnectionCreatePlugin } from "./plug-ins/connection/ConnectionCreatePl
 
 import { RecordsManagerPlugin } from "./plug-ins/records/RecordsManagerPlugin.js";
 
-import { Signal, combineLatest, fromEvent, fromBetweenEvents, correlateEvents, correlateSignals } from "signals";
 
 
 export class SubwayBuilder extends HTMLElement {
@@ -77,14 +77,12 @@ export class SubwayBuilder extends HTMLElement {
     const svg = this.querySelector("#main-svg");
     const app = new Application(svg);
 
-
-    reg(app)
-
     app.actions = {};
     globalThis.app = app;
     Object.freeze(app);
 
     app.use(new PolyfillManagerPlugin());
+    app.use(new EventCorrelatorPlugin());
 
     app.use(new ColorManagerPlugin());
     app.use(new WidgetManagerPlugin());
@@ -126,33 +124,4 @@ export class SubwayBuilder extends HTMLElement {
     app.init();
 
   }
-}
-
-
-
-function reg(app){
-
-    const instanceCorrelation = correlateEvents(app,
-      { alias:'station', name:'stationCreated', correlationField:'id' },
-      { alias:'record',  name:'recordCreated', correlationField:'id' },
-    );
-    // console.log('HHH Correlation Created');
-    // instanceCorrelation.subscribe(v=>console.log('HHH Correlation: Station  & Record', v))
-
-    const classCorrelation = correlateEvents(app,
-      { alias:'manifest', name:'manifestAdded', correlationField:'id' },
-      { alias:'gadget', name:'gadgetAdded', correlationField:'id' },
-    );
-    // classCorrelation.subscribe(v=>console.log('HHH B classCorrelation', v))
-
-
-    const nodeCorrelation = correlateSignals( // node = { station, record, manifest, gadget }
-      { signal: instanceCorrelation, correlationField: 'station.agentType', },
-      { signal: classCorrelation, correlationField: 'manifest.id', },
-    );
-    // nodeCorrelation.subscribe(v=>console.log('HHH nodeCorrelation GGGGGGGGGGGGGGGGGG', v))
-
-    nodeCorrelation.toEvent(app, 'nodeReady');
-    app.on("nodeReady", (node) => console.log('nodeReady', node)); // node = { station, record, manifest, gadget }
-
 }

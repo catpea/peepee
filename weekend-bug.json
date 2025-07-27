@@ -1,0 +1,81 @@
+{
+  "stations": {
+    "mplpdlklggjcgkboijkfloiipoeafggn": {
+      "id": "mplpdlklggjcgkboijkfloiipoeafggn",
+      "x": 465,
+      "y": 401,
+      "r": 32,
+      "label": "Untitled",
+      "agentType": "basic/inspect"
+    },
+    "ddbghenjlbbhdccndbiogjkbpcgbkhac": {
+      "id": "ddbghenjlbbhdccndbiogjkbpcgbkhac",
+      "x": 87,
+      "y": 314,
+      "r": 32,
+      "label": "Untitled",
+      "agentType": "basic/comment"
+    },
+    "calgeeajkfekdnfmpblakgpnkjdeinea": {
+      "id": "calgeeajkfekdnfmpblakgpnkjdeinea",
+      "x": 77,
+      "y": 596,
+      "r": 32,
+      "label": "Untitled",
+      "agentType": "basic/comment"
+    }
+  },
+  "connections": {
+    "bhnmadlecfdgpjddjgeafahbfbmplmpg": {
+      "id": "bhnmadlecfdgpjddjgeafahbfbmplmpg",
+      "fromId": "ddbghenjlbbhdccndbiogjkbpcgbkhac",
+      "toId": "mplpdlklggjcgkboijkfloiipoeafggn",
+      "fromPortId": "ddbghenjlbbhdccndbiogjkbpcgbkhac:output:output",
+      "fromPortName": "output",
+      "toPortId": "mplpdlklggjcgkboijkfloiipoeafggn:input:input",
+      "toPortName": "input",
+      "startLabel": "output>",
+      "centerLabel": "connection",
+      "endLabel": "input>",
+      "agentType": "basic/connection"
+    },
+    "mdgjhbjcglhdkidghjmkonbmekadpfdc": {
+      "id": "mdgjhbjcglhdkidghjmkonbmekadpfdc",
+      "fromId": "calgeeajkfekdnfmpblakgpnkjdeinea",
+      "toId": "mplpdlklggjcgkboijkfloiipoeafggn",
+      "fromPortId": "calgeeajkfekdnfmpblakgpnkjdeinea:output:output",
+      "fromPortName": "output",
+      "toPortId": "mplpdlklggjcgkboijkfloiipoeafggn:input:input",
+      "toPortName": "input",
+      "startLabel": "output>",
+      "centerLabel": "connection",
+      "endLabel": "input>",
+      "agentType": "basic/connection"
+    }
+  },
+  "records": {
+    "mplpdlklggjcgkboijkfloiipoeafggn": {
+      "id": "mplpdlklggjcgkboijkfloiipoeafggn"
+    },
+    "ddbghenjlbbhdccndbiogjkbpcgbkhac": {
+      "id": "ddbghenjlbbhdccndbiogjkbpcgbkhac"
+    },
+    "bhnmadlecfdgpjddjgeafahbfbmplmpg": {
+      "id": "bhnmadlecfdgpjddjgeafahbfbmplmpg",
+      "color": "green",
+      "centerLabel": "",
+      "startLabel": "",
+      "endLabel": ""
+    },
+    "calgeeajkfekdnfmpblakgpnkjdeinea": {
+      "id": "calgeeajkfekdnfmpblakgpnkjdeinea"
+    },
+    "mdgjhbjcglhdkidghjmkonbmekadpfdc": {
+      "id": "mdgjhbjcglhdkidghjmkonbmekadpfdc",
+      "color": "green",
+      "centerLabel": "",
+      "startLabel": "",
+      "endLabel": ""
+    }
+  }
+}

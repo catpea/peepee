@@ -33,7 +33,7 @@ export class Plugin {
   tuneIn(signal, callback) {
     if (!signal) throw new Error("Signal is missing");
     const unsubscribe = signal.subscribe(callback);
-    this.app.garbage.add([this.pluginName, 'plug-in', `signal` ], unsubscribe, `Listen to signal change "${eventName}"`);
+    this.app.garbage.add([this.pluginName, 'plug-in', `signal` ], unsubscribe, `Listen to signal change`);
   }
 
   // CSS

@@ -15,13 +15,13 @@ export class AgentManagerPlugin extends Plugin {
     this.app = app;
 
     this.featureRequest('ManifestManagerPlugin', 'agentManifests');
-    this.featureRequest('RecordsManagerPlugin', 'recordInstances');
-    this.featureRequest('StationManagerPlugin', 'stationInstances');
+    this.featureRequest('RecordsManagerPlugin',  'recordInstances');
+    this.featureRequest('StationManagerPlugin',  'stationInstances');
 
-    this.bus("stationCreated", (station) => this.instantiateStationAgent(station));
-    this.bus("stationRemoved", (id) => this.destroyAgent(id));
+    this.bus("nodeReady", (node) => this.instantiateStationAgent(node.station));
+    this.bus("linkReady", (link) => this.instantiateConnectionAgent(link.connection));
 
-    this.bus("connectionCreated", (connection) => this.instantiateConnectionAgent(connection));
+    this.bus("stationRemoved",    (id) => this.destroyAgent(id));
     this.bus("connectionRemoved", (id) => this.destroyAgent(id));
 
   }
@@ -31,29 +31,9 @@ export class AgentManagerPlugin extends Plugin {
   }
 
   async instantiateStationAgent({ id, agentType }) {
-
-        // signals
-    let record = this.recordInstances.get(id);
-    // if(!record){
-    //   await this.app.until('recordAdded', id);
-    //   record = this.recordInstances.get(id);
-    // }
-
-    const station = this.stationInstances.get(id);
-
-    let manifest =  this.agentManifests.get(agentType)  ;
-    // if (!manifest) {
-    //   // console.log('this.manifestManager', this.manifestManager)
-    //   // this.manifestManager.instantiateManifest({ agentType });
-    //   manifest = await this.app.until("manifestAdded", agentType);
-    // }
-
-    const configuration = {
-      id,
-      agentType,
-      record,
-      manifest,
-    };
+    const record   = this.recordInstances.get(id);
+    const manifest = this.agentManifests.get(agentType);
+    const configuration = { id, agentType, record, manifest };
 
     const Agent = await this.fetchClass("agents", agentType, manifest.files.main);
     const agent = new Agent(configuration);
@@ -63,8 +43,8 @@ export class AgentManagerPlugin extends Plugin {
 
     await agent.start();
     this.eventDispatch("stationAgentStarted", agent);
-
   }
+
   async instantiateConnectionAgent(connection) {
     console.warn('instantiateConnectionAgent', connection);
 
@@ -72,16 +52,9 @@ export class AgentManagerPlugin extends Plugin {
     if (connection.toId) connection.toEmitter = this.agentInstances.get(connection.toId);
     if (connection.fromPortName && connection.toPortName) connection.mapping = [{ fromEvent: connection.fromPortName, toEvent: connection.toPortName, transformer: (data) => data }];
 
-    let manifest = this.agentManifests.has(connection.agentType) ? this.agentManifests.get(connection.agentType) : null;
+    const manifest = this.agentManifests.get(connection.agentType);
 
-    if (!manifest) {
-      this.manifestManager.instantiateManifest(connection);
-      manifest = await this.app.until("manifestAdded", connection.agentType);
-    }
-
-    // load main file as specified in manifest
     const Agent = await this.fetchClass("agents", connection.agentType, manifest.files.main);
-
     const agent = new Agent(connection);
 
     this.agentInstances.set(connection.id, agent);
@@ -93,13 +66,10 @@ export class AgentManagerPlugin extends Plugin {
 
   async destroyAgent(id) {
     const agent = this.agentInstances.get(id);
-
     await agent.stop();
     this.eventDispatch("agentStopped", agent);
-
     this.agentInstances.delete(id);
     this.eventDispatch("agentRemoved", agent);
-
   }
 
   async fetchClass(agentRoot, basePath, fileName = "index.js") {

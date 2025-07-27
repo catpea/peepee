@@ -335,11 +335,11 @@ export function correlateEvents(eventEmitter, ...events){
   child.collect(eventListeners);
   child.collect(()=>cache.clear());
 
-  // const ttl = 5_000;
+  // const ttl = 2_000;
   // for (const event of events){
-  //   const timeoutId = setTimeout(() => { console.info(`Timeout for ${event.name} executed :(`) }, ttl);
+  //   const timeoutId = setTimeout(() => { console.warn(`Timeout for ${event.name} executed :(`) }, ttl);
   //   eventEmitter.on(event.name, () => {
-  //      console.info(`Timeout cleared for ${event.name} executed :)`)
+  //      // console.info(`Timeout cleared for ${event.name} executed :)`)
   //     clearTimeout(timeoutId);
   //   });
   // }
@@ -368,22 +368,14 @@ export function correlateSignals(...signalDescriptors){
 
           if(!cache.has(id)){
             const signalMap = [...signalDescriptors.map(()=>new Signal())];
-            //console.log('HHH signalMap', signalMap)
             const unsubscription = combineLatest(...signalMap )
-              .log('HHH >>>>>>>>>>>>>>>>>>>')
               .everyFilter((o) => o) // every value must be truthy, if every returned false STOP HERE
-
-              .scan( (a,v)=>({...a,...v}), {foo:1})
-              // .map( a => Object.assign({}, ...a))
-
-              .log('HHH >>>>>>>>>>>>>>>>>>>')
-
+              .map( a => Object.assign({}, ...a))
               .subscribe(v=>child.value=v);
             child.collect(unsubscription);
             cache.set(id, signalMap);
           } //!
-          //console.error('MISSING SIGNAL DATA, monitor whgat signal we are waiting for')
-          console.warn('HHH DATA>', id, index, value)
+          // console.error('MISSING SIGNAL DATA, monitor whgat signal we are waiting for')
           cache.get(id)[index].value = value;
         });
        return unsubscription;
@@ -391,7 +383,7 @@ export function correlateSignals(...signalDescriptors){
       const subscriptions = signalDescriptors.map( (descriptor, index) => processSignal(descriptor, index) );
       child.collect(subscriptions);
       child.collect(()=>cache.clear());
-      // child.collect(graph.connect(parent.id, child.id, "correlateSignals"));
+
       return child;
     }
 
@@ -449,6 +441,14 @@ export function switchMap(parent, mapper) {
 
 
 // INTEGRATIONS
+
+export function fromBus(bus, eventName) {
+  const child = new Signal();
+  const handler = (data) => (child.value = data);
+  const unsubscribeFromBus = bus.on(eventName, handler);
+  child.collect(unsubscribeFromBus);
+  return child;
+}
 
 export function fromEvent(el, eventType, options = {}) {
   const child = new Signal();

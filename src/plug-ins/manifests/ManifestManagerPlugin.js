@@ -16,6 +16,9 @@ export class ManifestManagerPlugin extends Plugin {
   init(app) {
     this.app = app;
 
+    // load manually as no component calls the anomaly directly
+    this.instantiateManifest({agentType: 'basic/connection'})
+
     this.app.on("stationAdded", (station) => this.instantiateManifest(station));
     this.app.on("stationRestored", (station) => this.instantiateManifest(station));
   }
