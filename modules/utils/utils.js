@@ -147,6 +147,42 @@ export function zip(...arrays) {
   return Array.from({ length }, (_, i) => arrays.map(arr => arr[i]));
 }
 
+export function get(obj, path, defaultValue) {
+    // Split the path into an array of keys
+    const keys = Array.isArray(path) ? path : path.split('.');
+
+    // Reduce the keys to traverse the object
+    const value = keys.reduce((acc, key) => {
+        return acc !== undefined && acc !== null ? acc[key] : undefined;
+    }, obj);
+
+    // Return the value or the defaultValue if undefined
+    return value !== undefined ? value : defaultValue;
+}
+
+// function zip(...arrays) {
+//     // Determine the length of the shortest array
+//     const minLength = Math.min(...arrays.map(arr => arr.length));
+
+//     // Create the zipped array
+//     const zipped = [];
+//     for (let i = 0; i < minLength; i++) {
+//         const tuple = arrays.map(arr => arr[i]);
+//         zipped.push(tuple);
+//     }
+
+//     return zipped;
+// }
+
+
+
+
+
+
+
+
+
+
 // Retry with exponential backoff
 export async function retry(fn, attempts = 3, delay = 1000) {
   try {

@@ -9,6 +9,7 @@ export class AgentManagerPlugin extends Plugin {
   constructor() {
     super();
     this.subscriptions = new Set();
+
     this.agentInstances = new Map();
   }
 
@@ -31,6 +32,7 @@ export class AgentManagerPlugin extends Plugin {
     this.app.on("connectionAdded", (connection) => this.instantiateConnectionAgent(connection));
     this.app.on("connectionRestored", (connection) => this.instantiateConnectionAgent(connection));
     this.app.on("connectionRemoved", (id) => this.destroyAgent(id));
+
   }
 
   stop() {
@@ -48,7 +50,6 @@ export class AgentManagerPlugin extends Plugin {
     }
 
     const station = this.stationInstances.get(id);
-    console.log("AAA", agentType, station);
 
     let manifest = this.agentManifests.has(agentType) ? this.agentManifests.get(agentType) : null;
     if (!manifest) {
@@ -71,6 +72,7 @@ export class AgentManagerPlugin extends Plugin {
 
     await agent.start();
     this.eventDispatch("stationAgentStarted", agent);
+
   }
   async instantiateConnectionAgent(connection) {
     console.warn('instantiateConnectionAgent', connection);
@@ -80,6 +82,7 @@ export class AgentManagerPlugin extends Plugin {
     if (connection.fromPortName && connection.toPortName) connection.mapping = [{ fromEvent: connection.fromPortName, toEvent: connection.toPortName, transformer: (data) => data }];
 
     let manifest = this.agentManifests.has(connection.agentType) ? this.agentManifests.get(connection.agentType) : null;
+
     if (!manifest) {
       this.manifestManager.instantiateManifest(connection);
       manifest = await this.app.until("manifestAdded", connection.agentType);
@@ -100,11 +103,12 @@ export class AgentManagerPlugin extends Plugin {
   async destroyAgent(id) {
     const agent = this.agentInstances.get(id);
 
+    await agent.stop();
+    this.eventDispatch("agentStopped", agent);
+
     this.agentInstances.delete(id);
     this.eventDispatch("agentRemoved", agent);
 
-    await agent.stop();
-    this.eventDispatch("agentStopped", agent);
   }
 
   async fetchClass(agentRoot, basePath, fileName = "index.js") {

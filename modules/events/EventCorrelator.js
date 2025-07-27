@@ -1,71 +1,55 @@
-Certainly! Below is the updated implementation of the `Correlator` class that extends the `EventEmitter` class. This allows the `Correlator` to directly emit events and manage its own subscriptions while still providing the correlation functionality.
+import { EventEmitter } from "events";
+import { Signal, combineLatest } from "signals";
+import { zip } from "utils";
 
-```javascript
-const EventEmitter = require('events');
-
-class Correlator extends EventEmitter {
-  constructor() {
+export class EventCorrelator extends EventEmitter {
+  constructor(eventBus, eventName, eventList, dataTransform = (o) => o, correlatorId = "id") {
     super();
-    this.correlationData = {};
-    this.sep = ':'; // Separator for event name and correlation ID
+
+    this.eventBus = eventBus;
+    this.eventName = eventName;
+    this.eventList = eventList;
+    this.dataTransform = dataTransform;
+    this.correlatorId = correlatorId;
+    this.database = new Map();
   }
 
-  // Start correlating events
-  correlate(correlationEventName, ...eventNames) {
-    eventNames.forEach(eventName => {
-      const [event, correlationField] = eventName.split(this.sep);
-      this.on(event, (data) => {
-        this.correlationData[correlationField] = data[correlationField];
-        this.checkCorrelation(correlationEventName);
+  start() {
+    this.signals = new Map(eventList.map((eventName) => [eventName, new Signal()]));
+
+    this.unlistenAll = eventList.map((eventName) => eventBus.on(eventName, (data) => (this.signals.get(eventName).value = data)));
+    eventList.map((eventName) => {
+      eventBus.on(eventName, (data) => {
+        console.info("EEE <->", { eventName, current: this.signals.get(eventName).value, data });
       });
     });
+
+    this.unsubscribe = combineLatest(...this.signals.values())
+      .everyFilter((o) => o) // every value must be truthy, if every returned false STOP HERE
+      .map((eventSignals) => Object.fromEntries(zip(eventList, eventSignals)))
+      .map((o) => dataTransform(o))
+      .subscribe((o)=>eventBus.emit(eventName, o));
+
+    return ()=>this.stop();
   }
 
-  // Check if all required events have been received
-  checkCorrelation(correlationEventName) {
-    const packet = {};
-    let allReceived = true;
-
-    for (const key in this.correlationData) {
-      if (this.correlationData[key] === undefined) {
-        allReceived = false;
-        break;
-      }
-      packet[key] = this.correlationData[key];
-    }
-
-    if (allReceived) {
-      this.emit(correlationEventName, packet);
-      // Reset correlation data after processing
-      this.correlationData = {};
-    }
+  stop() {
+    this.unlistenAll.map((o) => o());
+    this.unsubscribe();
+    this.signals.clear();
   }
 }
 
-// Example usage:
-const correlator = new Correlator();
+function test() {
+  const bus = new EventEmitter();
+  bus.on("A", (v) => console.log("EEE A", v));
+  bus.on("B", (v) => console.log("EEE B", v));
+  bus.on("C", (v) => console.log("EEE C", v));
+  bus.on("✓", (v) => console.log("EEE ✓", v));
+  const eventCorrelator = new EventCorrelator(bus, "✓", ["A", "B", "C"], (o) => o.B);
+  setTimeout(() => bus.emit("A", 1), 1_000);
+  setTimeout(() => bus.emit("B", 2), 2_000);
+  setTimeout(() => bus.emit("C", 3), 3_000);
+}
 
-// Correlate events
-correlator.correlate('checkout:completed', 'checkout:transactionId', 'paid:transactionId');
-
-// Subscribe to the correlation event
-correlator.on('checkout:completed', (data) => {
-  console.log('Correlation event emitted:', data);
-});
-
-// Publish events
-correlator.emit('checkout', { transactionId: '12345' });
-correlator.emit('paid', { transactionId: '12345' });
-
-// Output: Correlation event emitted: { transactionId: '12345' }
-```
-
-### Explanation:
-- **Correlator Class**: The `Correlator` class now extends `EventEmitter`, allowing it to directly use the `on` and `emit` methods for event handling.
-- **correlate Method**: This method subscribes to the specified events and stores the relevant data in `correlationData`.
-- **checkCorrelation Method**: This method checks if all required correlation fields have been received and emits the correlation event with the collected data if they have.
-
-### Example Usage:
-- The example demonstrates how to correlate a `checkout:completed` event with `checkout:transactionId` and `paid:transactionId`. When both events are emitted, the correlator emits the correlation event with the relevant data.
-
-This implementation is clean and leverages the capabilities of `EventEmitter` while providing the correlation functionality in a straightforward manner.
+//test();

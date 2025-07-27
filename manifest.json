@@ -1,0 +1,82 @@
+{
+  "short_name": "Pee Pee",
+  "name": "Pee Pee Visual Programming Studio",
+  "categories": ["productivity", "programming", "automation", "developer-tools"],
+  "description": "A powerful visual programming environment that enables developers to build sophisticated applications through intuitive drag-and-drop interfaces and visual flow connections.",
+  "icons": [
+    {
+      "src": "images/favicon/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/favicon/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/favicon/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "images/favicon/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#586e75",
+  "background_color": "#002b36",
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "screenshots": [
+    {
+      "src": "images/screenshots/desktop-wide.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "peepee desktop interface"
+    },
+    {
+      "src": "images/screenshots/mobile-narrow.png",
+      "sizes": "375x812",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "peepee mobile interface"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Project",
+      "short_name": "New",
+      "description": "Create a new visual programming project",
+      "url": "/new",
+      "icons": [
+        {
+          "src": "images/shortcuts/new-project.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Templates",
+      "short_name": "Templates",
+      "description": "Browse project templates",
+      "url": "/templates",
+      "icons": [
+        {
+          "src": "images/shortcuts/templates.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

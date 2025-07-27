@@ -172,7 +172,6 @@ class PanelComponent extends Component {
         const childrenHeightSum = children.reduce((a,v)=>a+v, 0);
         const gapSum = children.length  * this.attributes.gap.value
         const fullHeight = this.attributes.titleHeight.value+childrenHeightSum
-        console.log('www2', fullHeight)
         this.attributes.height.value = fullHeight;
       })
 

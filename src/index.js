@@ -32,6 +32,8 @@ import { ConnectionCreatePlugin } from "./plug-ins/connection/ConnectionCreatePl
 
 import { RecordsManagerPlugin } from "./plug-ins/records/RecordsManagerPlugin.js";
 
+import { Signal, combineLatest, fromEvent, fromBetweenEvents, correlateEvents, correlateSignals } from "signals";
+
 
 export class SubwayBuilder extends HTMLElement {
   constructor() {
@@ -74,6 +76,10 @@ export class SubwayBuilder extends HTMLElement {
     // const svg = this.querySelector('#svg-container');
     const svg = this.querySelector("#main-svg");
     const app = new Application(svg);
+
+
+    reg(app)
+
     app.actions = {};
     globalThis.app = app;
     Object.freeze(app);
@@ -120,4 +126,35 @@ export class SubwayBuilder extends HTMLElement {
     app.init();
 
   }
+}
+
+
+
+function reg(app){
+
+      const instanceCorrelation = correlateEvents(app,
+      { alias:'station', name:'stationAdded', correlationField:'id' },
+      { alias:'station', name:'stationRestored', correlationField:'id' },
+      { alias:'record', name:'recordAdded', correlationField:'id' },
+      { alias:'record', name:'recordRestored', correlationField:'id' },
+    );
+    instanceCorrelation.subscribe(v=>console.log('HHH Correlation: Station  & Record', v))
+
+    // const classCorrelation = correlateEvents(app,
+    //   { alias:'manifest', name:'manifestAdded', correlationField:'id' },
+    //   { alias:'gadget', name:'gadgetAdded', correlationField:'id' },
+    // );
+    // classCorrelation.subscribe(v=>console.log('HHH B classCorrelation', v))
+
+
+    // const nodeCorrelation = correlateSignals( // node = { station, record, manifest, gadget }
+    //   { signal: instanceCorrelation, correlationField: 'station.agentType', },
+    //   { signal: classCorrelation, correlationField: 'manifest.id', },
+    // );
+
+    // nodeCorrelation.subscribe(v=>console.log('HHH nodeCorrelation GGGGGGGGGGGGGGGGGG', v))
+
+    // nodeCorrelation.toEvent(app, 'nodeReady');
+    // app.on("nodeReady", (node) => console.log('HHHHHHHHHH', node)); // node = { station, record, manifest, gadget }
+
 }

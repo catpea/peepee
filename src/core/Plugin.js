@@ -1,4 +1,7 @@
+import {EventCorrelator} from 'events';
+
 export class Plugin {
+
   eventDispatch(...argv) {
     // console.info('eventDispatch:', this.constructor.name, ...argv,);
     this.app.emit(...argv);
@@ -49,4 +52,11 @@ export class Plugin {
     style.textContent = cssText;
     document.head.appendChild(style);
   }
+  registerCorrelation(name, events, map){
+    const eventCorrelator = new EventCorrelator(this.app, name, events, map);
+    const unsubscribe = eventCorrelator.start();
+    this.subscriptions.add(unsubscribe);
+
+  }
+
 }

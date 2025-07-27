@@ -18,8 +18,6 @@ export class ConnectionCreatePlugin extends Plugin {
     this.connectionManager = app.plugins.get('ConnectionManagerPlugin');
     this.connectionInstances = this.connectionManager.connectionInstances;
 
-
-
     this.app.on("connectionAdd", (raw) => this.connectionAdd(raw));
     this.app.on("connectionRestore", (deserialized) => this.connectionRestore(deserialized));
   }

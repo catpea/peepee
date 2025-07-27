@@ -1,11 +1,15 @@
 import { EventEmitter } from "events";
 import { Signal } from "signals";
+import { GarbageTree } from "garbage";
 
 // import { Graph } from "./core/Graph.js";
 
 export class Application extends EventEmitter {
   constructor(svgElement) {
     super();
+    this.garbage = new GarbageTree({ debug: true, maxHistorySize: 100 });
+    //EX: this.garbage.add('/database-plugin', () => console.log('  🔌 Disconnecting from database pool'), 'Main database connection cleanup');
+
 
     // All Plugins Use This
     this.palette = {}
@@ -46,6 +50,7 @@ export class Application extends EventEmitter {
 
   use(plugin) {
     const pluginName = plugin.constructor.name;
+    plugin.pluginName = pluginName;
     this.plugins.set(pluginName, plugin);
   }
 }

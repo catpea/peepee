@@ -1,17 +1,17 @@
-import { Signal, combineLatest, fromEvent, fromBetweenEvents } from "signals";
+import { Signal, combineLatest, fromEvent, fromBetweenEvents, correlateEvents, correlateSignals } from "signals";
 
 import { Plugin } from "plugin";
 
 export class PortManagerPlugin extends Plugin {
   app;
-  subscriptions;
+  pluginName;
 
   portInstances;
 
   constructor() {
     super();
-    this.subscriptions = new Set();
     this.portInstances = new Map();
+
   }
 
   init(app) {
@@ -37,14 +37,57 @@ export class PortManagerPlugin extends Plugin {
     this.workbenchPlugin = app.plugins.get("WorkbenchPlugin");
     this.engine = this.workbenchPlugin.engine;
 
-    this.app.on("stationAgentAdded", (agent) => this.instantiatePorts(agent));
+    const unsubscribe = this.app.on('stationAgentAdded', (agent) => this.instantiatePorts(agent));
+    this.app.garbage.add([this.pluginName, 'plug-in', 'stationAgentAdded-listener' ], unsubscribe, 'Plugin listens to stationAgentAdded in order to instantiate ports');
+
     // this.app.on("gadgetAdded", (gadget) => this.instantiatePorts(gadget));
 
     // 1. await stationAgentAdded
     // 2. await gadget with the station.agentTYpe
     // 3. call instantiatePorts
 
+    // stationAdded, recordAdded, agentAdded
+    // manifest, gadgetAdded
 
+    // const decorrelate = this.registerCorrelation('instantiateGadget', ['gadgetAdded', 'recordAdded', 'manifestAdded'], o=>o.manifestAdded );
+    // this.app.on('instantiateGadget', (manifest) => this.instantiateGadget(manifest));
+    // this.subscriptions.add(decorrelate);
+
+    // const nodeSignal = this.registerCorrelation('nodeReady', ['stationAdded', 'recordAdded'], o=>o.manifestAdded );
+    // const typeSignal = this.registerCorrelation('typeReady', ['manifestAdded', 'gadgetAdded'], o=>o.manifestAdded );
+    // const agentSignal = this.registerCorrelation('agentReady', ['nodeReady', 'typeReady'], o=>o.manifestAdded, 'agentType' );
+
+    // const stationAddedSignal = fromEvent(this.app, 'stationAdded');
+    // const recordAddedSignal = fromEvent(this.app, 'recordAdded');
+    // const instanceCorrelation = correlateEventOn('id', stationAddedSignal, recordAddedSignal);
+
+    // const manifestAddedSignal = fromEvent(this.app, 'manifestAdded');
+    // const gadgetAddedSignal = fromEvent(this.app, 'gadgetAdded');
+    // const classCorrelation = correlateEventOn('id', manifestAddedSignal, gadgetAddedSignal);
+
+    // const fullCorrelation = correlate(
+    //   ([instanceCorrelation, classCorrelation])=>instanceCorrelation[0].agentType===classCorrelation[0].id,
+    //   instanceCorrelation, classCorrelation
+    // );
+
+    // fullCorrelation.subscribe(([instanceCorrelation, classCorrelation]) => this.instantiatePorts(agent));
+    // // fullCorrelation.subscribe(([instanceCorrelation, classCorrelation]) => {
+    // fullCorrelation.subscribe(a => {
+    //   console.log(a)
+    // });
+
+    // fullCorrelation.toEvent(this.app, 'nodeReady');
+
+
+
+
+    // this.app.on("nodeReady", (node) => this.instantiatePorts(node)); // node = { station, record, manifest, gadget }
+
+
+          // ([instanceCorrelation, classCorrelation])=>node.stationAdded.agentType===type.manifestAdded.id,
+
+
+    // this.app.on('instantiateGadget', (manifest) => this.instantiateGadget(manifest));
 
     // this.app.on("agentRemoved", (id) => this.destroyPorts(id));
     this.app.on("stationRemoved", (id) => this.destroyPorts(id));
@@ -92,8 +135,6 @@ export class PortManagerPlugin extends Plugin {
 
   async instantiatePorts({id}) {
 
-    console.log('instantiatePorts', id)
-
     const agent = this.agentInstances.get(id);
     const station = this.stationInstances.get(id);
     const manifest = this.agentManifests.get(station.agentType);
@@ -124,7 +165,7 @@ export class PortManagerPlugin extends Plugin {
     let rootComponent;
 
     if(gadgetInstance){
-      console.log('gadgetInstance', gadgetInstance)
+      // console.log('gadgetInstance', gadgetInstance)
       let { content, properties } = gadgetInstance.content({ manifest, station });
         rootComponent = this.widgets.append(content);
 
@@ -173,12 +214,14 @@ export class PortManagerPlugin extends Plugin {
 
     // INSTALL CONV TOOL ON PORTS
     for (const port of manifest.node.outputs) {
+
       const id = [station.id, "output", port.id].join(":");
       const portComponent = this.widgets.registry.get(id);
       if(!portComponent) continue;
       let previousTool = this.app.selectedTool.value;
       let convenienceTool = "connect";
       const pressingActivity = fromBetweenEvents(portComponent.portSocket, "mousedown", this.svg, "mouseup");
+
       const unsubscribe = pressingActivity.subscribe((isPressing) => {
         if (isPressing) {
           previousTool = this.app.selectedTool.value;
@@ -187,7 +230,10 @@ export class PortManagerPlugin extends Plugin {
           this.app.selectedTool.value = previousTool;
         }
       });
-      console.warn("unsubscribe", unsubscribe);
+
+      this.app.garbage.add([this.pluginName, 'nodes', station.id, port.id ], unsubscribe, 'Convenience connection tool that lights up for every OUTPUT port of a station');
+
+
     }
 
     // let lastTool = this.app.selectedTool.value;

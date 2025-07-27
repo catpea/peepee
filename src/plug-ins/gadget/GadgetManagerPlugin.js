@@ -19,6 +19,8 @@ export class GadgetManagerPlugin extends Plugin {
 
     //TODO: this requires a queue too many are piling up at the same time
     this.app.on("manifestAdded", (manifest) => this.instantiateGadget(manifest));
+
+
   }
 
   stop() {
@@ -36,12 +38,12 @@ export class GadgetManagerPlugin extends Plugin {
     }
     this.eventDispatch('gadgetAdded', this.gadgetRegistry.get(manifest.id));
   }
+
   async fetchGadget(agentRoot, basePath, fileName = "gui.js") {
     const pathnames = window.location.pathname.split('/').filter(o=>o);
     const url = '/'+ [...pathnames, agentRoot, basePath, fileName].join('/');
     try {
       const { main } = await import(url);
-      console.info(url, main)
       return main;
     } catch (error) {
       console.error("There was a problem with the import operation:", error);

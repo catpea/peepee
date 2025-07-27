@@ -1,3 +1,4 @@
+import { zip, get } from "utils";
 
 export const manifest = {
   map:{
@@ -237,14 +238,14 @@ export class Pulse {
 }
 
 export class Signal extends Pulse {
+  log(...a) { return log(this, ...a) }
   map(fn) { return map(this, fn) }
   filter(fn) { return filter(this, fn) }
   combineLatest(...signals) { return combineLatest(this, ...signals) }
   // flat(...signals) { return combineLatest(this, ...signals) }
   switchMap(mapperFn) { return switchMap(this, mapperFn) }
   scan(reducerFn, initialValue) { return scan(this, reducerFn, initialValue) }
-  reduce(reducerFn, initialValue) { return reduce(this, reducerFn, initialValue) }
-
+  everyFilter(condition){ return everyFilter(this, condition) }
   debounce(ms) {}
   delay(ms) {}
   throttle(ms) {}
@@ -253,11 +254,22 @@ export class Signal extends Pulse {
   // NOTE: to* methods return subscriptions not signals
   toInnerTextOf(el) { return toInnerTextOf(this, el); }
   toSignal(destination) { return toSignal(this, destination); }
+  toEvent(bus, eventName) { return toEvent(this, bus, eventName); }
 }
 
 // THIS IS THE MAP FUNCTION, it can be used standalone as map(usernameSignal, v=>`Hello ${v}`),
 // but it looks nicer when you use the method: usernameSignal.map(v=>`Hello ${v}`).subscribe(v=>console.log(v))
 
+export function log(parent, ...args) {
+  const child = new Signal(undefined, {name: manifest.filter.name});
+  const subscription = parent.subscribe((v) => {
+    console.log(...args, v);
+    child.value = v;
+  });
+  child.collect(subscription);
+  child.collect(graph.connect(parent.id, child.id, "filter"));
+  return child;
+}
 export function filter(parent, test) {
   const child = new Signal(undefined, {name: manifest.filter.name});
   const subscription = parent.subscribe((v) => { if (test(v)) { child.value = v; } });
@@ -274,26 +286,110 @@ export function map(parent, map) {
   return child;
 }
 
+export function everyFilter(parent, condition) {
+  // every = pass the text
+  // filter = drop packet if no pass
+  // this exists because every alone could only rerturn True or False, which would replace the packet with boolean, but now the packet passes only if condition is true
+  const child = new Signal(undefined, {name: 'Every Filter'});
+  const subscription = parent.subscribe(v => {
+    if (v.every(condition)){
+      child.value = v;
+    }
+  });
+  child.collect(subscription);
+  child.collect(graph.connect(parent.id, child.id, "everyFilter"));
+  return child;
+}
+
+
+export function correlateEvents(eventEmitter, ...events){
+  //NOTE: format of events: [ { alias:'station', name:'stationAdded', correlationField:'id' }, ...]
+  const cache = new Map();
+  const child = new Signal(undefined, {name: 'Correlate Events'});
+
+
+  // NOTE:
+  // NOTE:
+  const updateCorrelatedValue = (event, data) => {
+    const id = data.id;
+    // console.log('HHH correlateEvents', id);
+
+    if(!cache.has(id)){
+      const signalMap = new Map( events.map(event=>[event.name, new Signal()]) )
+      const unsubscription = combineLatest(...signalMap.values())
+        .everyFilter((o) => o) // every value must be truthy, if every returned false STOP HERE
+        // .log('HHH 111', events.map(event=>event.alias))
+        // .log('HHH 111', signalMap.values())
+        .map(() => Object.fromEntries(   zip(   events.map(event=>event.alias), [...signalMap.values()] )) )
+        // .log('HHH 111')
+        .subscribe(v=>child.value=v);
+      child.collect(unsubscription);
+      cache.set(id, signalMap);
+    }
+
+    cache.get(id).get(event.name).value = data;
+  };
+
+  // pipe events from the bus into the signal system.
+  const eventListeners = events.map( event =>  eventEmitter.on(event.name, data=> updateCorrelatedValue(event, data)) );
+  child.collect(eventListeners);
+  child.collect(()=>cache.clear());
+
+  // memory management
+  // child.collect(graph.connect(parent.id, child.id, "correlateEvents"));
+  return child;
+
+}
+
+export function correlateSignals(...signalDescriptors){
+      const cache = new Map();
+      const child = new Signal(undefined, {name: 'Correlate Signals'});
+      const processSignal = (descriptor, index) => {
+
+        const unsubscription = descriptor.signal.subscribe(value=>{
+          const id = get(value,  descriptor.correlationField, null);
+
+          if(!cache.has(id)){
+            const signalMap = [...signalDescriptors.map(()=>new Signal())];
+            console.log('HHH signalMap', signalMap)
+            const unsubscription = combineLatest(...signalMap )
+              .everyFilter((o) => o) // every value must be truthy, if every returned false STOP HERE
+              .scan( (a,v)=>({...a,...v}), {foo:1})
+              .log('HHH >>>>>>>>>>>>>>>>>>>')
+
+              .subscribe(v=>child.value=v);
+            child.collect(unsubscription);
+            cache.set(id, signalMap);
+          } //!
+          console.error('MISSING SIGNAL DATA, monitor whgat signal we are waiting for')
+          cache.get(id)[index].value = value;
+        });
+       return unsubscription;
+      };
+      const subscriptions = signalDescriptors.map( (descriptor, index) => processSignal(descriptor, index) );
+      child.collect(subscriptions);
+      child.collect(()=>cache.clear());
+      // child.collect(graph.connect(parent.id, child.id, "correlateSignals"));
+      return child;
+    }
+
+
+
+
+
+
+
 
 export function scan(parent, reducer, initialValue) {
   const child = new Signal(initialValue, { name: manifest.scan.name });
   const subscription = parent.subscribe((v) => {
-    // console.log('ggg g' , v);
     child.value = v.reduce(reducer, initialValue);
   });
   child.collect(subscription);
-  child.collect(graph.connect(parent.id, child.id, "scan"));
+  child.collect(graph.connect(parent.id, child.id, "correlateSignals"));
   return child;
 }
-export function reduce(parent, reducer, initialValue) {
-  const child = new Signal(initialValue, { name: manifest.scan.name });
-  const subscription = parent.subscribe((v) => {
-    child.value = v.reduce(reducer, initialValue);
-  });
-  child.collect(subscription);
-  child.collect(graph.connect(parent.id, child.id, "scan"));
-  return child;
-}
+
 export function combineLatest(...parents) {
   const child = new Signal(undefined,{name: manifest.combineLatest.name});
   const updateCombinedValue = () => {
@@ -317,7 +413,7 @@ export function switchMap(parent, mapper) {
   });
   child.collect(innerSubscription); // clean the final one on terminate
   child.collect(parentSubscription);
-  child.collect(graph.connect(parent.id, child.id, "switchMap"));
+  child.collect(graph.connect(parent.id, child.id, "combineLatest"));
   return child;
 }
 
@@ -349,6 +445,10 @@ export function toInnerTextOf(signal, el) {
 
 export function toSignal(source, destination) {
   const subscription = source.subscribe((v) => (destination.value = v));
+  return subscription;
+}
+export function toEvent(source, bus, eventName) {
+  const subscription = source.subscribe(v=> bus.emit(eventName, v) );
   return subscription;
 }
 
