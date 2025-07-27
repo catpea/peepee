@@ -32,6 +32,7 @@ export class RecordsManagerPlugin extends Plugin {
     const record = new Record({ id: station.id });
     this.recordInstances.set(record.id, record);
     this.eventDispatch('recordAdded', record);
+    this.eventDispatch('recordCreated', record);
     record.subscribe(()=>this.eventDispatch('recordUpdated', record));
     return record;
   }
@@ -40,6 +41,7 @@ export class RecordsManagerPlugin extends Plugin {
     const record = new Record(raw);
     this.recordInstances.set(record.id, record);
     this.eventDispatch('recordRestored', record);
+    this.eventDispatch('recordCreated', record);
     record.subscribe(()=>this.eventDispatch('recordUpdated', record));
     return record;
   }

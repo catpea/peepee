@@ -210,9 +210,7 @@ export class GarbageTree {
             throw new Error('Destructible must be a function');
         }
 
-        if(Array.isArray(path)){
-          path = '/' + path.join('/');
-        }
+        if(Array.isArray(path)){ path = '/' + path.join('/') }
 
         const parentNode = this.navigateToPath(path);
         const leafName = `destructible-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
@@ -237,6 +235,9 @@ export class GarbageTree {
      * @param {boolean} recursive - Whether to execute children recursively
      */
     free(path, recursive = true) {
+
+      if(Array.isArray(path)){ path = '/' + path.join('/') }
+
         const node = this.findNode(path);
         if (!node) {
             this._log(`No node found at path: ${path}`);

@@ -312,7 +312,7 @@ export function correlateEvents(eventEmitter, ...events){
   // NOTE:
   const updateCorrelatedValue = (event, data) => {
     const id = data.id;
-    // console.log('HHH correlateEvents', id);
+    // console.log('HHH correlateEvents->updateCorrelatedValue', id);
 
     if(!cache.has(id)){
       const signalMap = new Map( events.map(event=>[event.name, new Signal()]) )
@@ -320,13 +320,13 @@ export function correlateEvents(eventEmitter, ...events){
         .everyFilter((o) => o) // every value must be truthy, if every returned false STOP HERE
         // .log('HHH 111', events.map(event=>event.alias))
         // .log('HHH 111', signalMap.values())
-        .map(() => Object.fromEntries(   zip(   events.map(event=>event.alias), [...signalMap.values()] )) )
+        .map(() => Object.fromEntries(   zip(   events.map(event=>event.alias), [...signalMap.values().map(s=>s.value)] )) )
         // .log('HHH 111')
         .subscribe(v=>child.value=v);
       child.collect(unsubscription);
       cache.set(id, signalMap);
     }
-
+    // console.log('HHH correlateEvents assign to signal', id, event.name, data)
     cache.get(id).get(event.name).value = data;
   };
 
@@ -334,6 +334,16 @@ export function correlateEvents(eventEmitter, ...events){
   const eventListeners = events.map( event =>  eventEmitter.on(event.name, data=> updateCorrelatedValue(event, data)) );
   child.collect(eventListeners);
   child.collect(()=>cache.clear());
+
+  // const ttl = 5_000;
+  // for (const event of events){
+  //   const timeoutId = setTimeout(() => { console.info(`Timeout for ${event.name} executed :(`) }, ttl);
+  //   eventEmitter.on(event.name, () => {
+  //      console.info(`Timeout cleared for ${event.name} executed :)`)
+  //     clearTimeout(timeoutId);
+  //   });
+  // }
+
 
   // memory management
   // child.collect(graph.connect(parent.id, child.id, "correlateEvents"));
@@ -347,21 +357,33 @@ export function correlateSignals(...signalDescriptors){
       const processSignal = (descriptor, index) => {
 
         const unsubscription = descriptor.signal.subscribe(value=>{
-          const id = get(value,  descriptor.correlationField, null);
+          const id = get(value, descriptor.correlationField, null);
+
+          if(id==null) {
+            console.error('failed to retrieve id from correlationField', id, descriptor.correlationField, value);
+            console.error(value.station );
+            console.error(value.station.agentType);
+          }
+          if(id==null) throw new Error('failed to retrieve id from correlationField');
 
           if(!cache.has(id)){
             const signalMap = [...signalDescriptors.map(()=>new Signal())];
-            console.log('HHH signalMap', signalMap)
+            //console.log('HHH signalMap', signalMap)
             const unsubscription = combineLatest(...signalMap )
+              .log('HHH >>>>>>>>>>>>>>>>>>>')
               .everyFilter((o) => o) // every value must be truthy, if every returned false STOP HERE
+
               .scan( (a,v)=>({...a,...v}), {foo:1})
+              // .map( a => Object.assign({}, ...a))
+
               .log('HHH >>>>>>>>>>>>>>>>>>>')
 
               .subscribe(v=>child.value=v);
             child.collect(unsubscription);
             cache.set(id, signalMap);
           } //!
-          console.error('MISSING SIGNAL DATA, monitor whgat signal we are waiting for')
+          //console.error('MISSING SIGNAL DATA, monitor whgat signal we are waiting for')
+          console.warn('HHH DATA>', id, index, value)
           cache.get(id)[index].value = value;
         });
        return unsubscription;

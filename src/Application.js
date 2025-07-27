@@ -7,7 +7,7 @@ import { GarbageTree } from "garbage";
 export class Application extends EventEmitter {
   constructor(svgElement) {
     super();
-    this.garbage = new GarbageTree({ debug: true, maxHistorySize: 100 });
+    this.garbage = new GarbageTree({ debug: false, maxHistorySize: 100 });
     //EX: this.garbage.add('/database-plugin', () => console.log('  🔌 Disconnecting from database pool'), 'Main database connection cleanup');
 
 

@@ -32,6 +32,7 @@ export class ConnectionCreatePlugin extends Plugin {
     this.connectionInstances.set(connection.id, connection);
     //console.warn("connectionAdded", connection.serialize());
     this.eventDispatch("connectionAdded", connection);
+    this.eventDispatch("connectionCreated", connection);
     return connection;
   }
 
@@ -39,6 +40,7 @@ export class ConnectionCreatePlugin extends Plugin {
     const connection = new Connection(options);
     this.connectionInstances.set(connection.id, connection);
     this.eventDispatch("connectionRestored", connection);
+    this.eventDispatch("connectionCreated", connection);
     return connection;
   }
 

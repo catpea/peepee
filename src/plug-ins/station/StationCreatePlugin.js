@@ -36,6 +36,7 @@ export class StationCreatePlugin extends Plugin {
     const station = new Station(raw);
     this.stationInstances.set(station.id, station);
     this.eventDispatch('stationAdded', station);
+    this.eventDispatch('stationCreated', station);
     return station;
   }
 
@@ -43,6 +44,7 @@ export class StationCreatePlugin extends Plugin {
     const station = new Station(options);
     this.stationInstances.set(station.id, station);
     this.eventDispatch('stationRestored', station);
+    this.eventDispatch('stationCreated', station);
     return station;
   }
 

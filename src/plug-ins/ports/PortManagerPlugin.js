@@ -37,8 +37,7 @@ export class PortManagerPlugin extends Plugin {
     this.workbenchPlugin = app.plugins.get("WorkbenchPlugin");
     this.engine = this.workbenchPlugin.engine;
 
-    const unsubscribe = this.app.on('stationAgentAdded', (agent) => this.instantiatePorts(agent));
-    this.app.garbage.add([this.pluginName, 'plug-in', 'stationAgentAdded-listener' ], unsubscribe, 'Plugin listens to stationAgentAdded in order to instantiate ports');
+    this.bus('stationAgentAdded', (agent) => this.instantiatePorts(agent));
 
     // this.app.on("gadgetAdded", (gadget) => this.instantiatePorts(gadget));
 

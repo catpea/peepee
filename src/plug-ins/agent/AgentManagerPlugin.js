@@ -8,54 +8,45 @@ export class AgentManagerPlugin extends Plugin {
 
   constructor() {
     super();
-    this.subscriptions = new Set();
-
     this.agentInstances = new Map();
   }
 
   init(app) {
     this.app = app;
 
-    this.manifestManager = app.plugins.get("ManifestManagerPlugin");
-    this.agentManifests = this.manifestManager.agentManifests;
+    this.featureRequest('ManifestManagerPlugin', 'agentManifests');
+    this.featureRequest('RecordsManagerPlugin', 'recordInstances');
+    this.featureRequest('StationManagerPlugin', 'stationInstances');
 
-    this.recordsManager = app.plugins.get("RecordsManagerPlugin");
-    this.recordInstances = this.recordsManager.recordInstances;
-    this.stationManager = app.plugins.get("StationManagerPlugin");
+    this.bus("stationCreated", (station) => this.instantiateStationAgent(station));
+    this.bus("stationRemoved", (id) => this.destroyAgent(id));
 
-    this.stationInstances = this.stationManager.stationInstances;
-
-    this.app.on("stationAdded", (station) => this.instantiateStationAgent(station));
-    this.app.on("stationRestored", (station) => this.instantiateStationAgent(station));
-    this.app.on("stationRemoved", (id) => this.destroyAgent(id));
-
-    this.app.on("connectionAdded", (connection) => this.instantiateConnectionAgent(connection));
-    this.app.on("connectionRestored", (connection) => this.instantiateConnectionAgent(connection));
-    this.app.on("connectionRemoved", (id) => this.destroyAgent(id));
+    this.bus("connectionCreated", (connection) => this.instantiateConnectionAgent(connection));
+    this.bus("connectionRemoved", (id) => this.destroyAgent(id));
 
   }
 
   stop() {
-    for (const unsubscribe of this.subscriptions) unsubscribe();
-    this.subscriptions.clear();
+    this.app.garbage.free([this.pluginName]);
   }
 
   async instantiateStationAgent({ id, agentType }) {
 
         // signals
     let record = this.recordInstances.get(id);
-    if(!record){
-      await this.app.until('recordAdded', id);
-      record = this.recordInstances.get(id);
-    }
+    // if(!record){
+    //   await this.app.until('recordAdded', id);
+    //   record = this.recordInstances.get(id);
+    // }
 
     const station = this.stationInstances.get(id);
 
-    let manifest = this.agentManifests.has(agentType) ? this.agentManifests.get(agentType) : null;
-    if (!manifest) {
-      this.manifestManager.instantiateManifest({ agentType });
-      manifest = await this.app.until("manifestAdded", agentType);
-    }
+    let manifest =  this.agentManifests.get(agentType)  ;
+    // if (!manifest) {
+    //   // console.log('this.manifestManager', this.manifestManager)
+    //   // this.manifestManager.instantiateManifest({ agentType });
+    //   manifest = await this.app.until("manifestAdded", agentType);
+    // }
 
     const configuration = {
       id,

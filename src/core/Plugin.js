@@ -2,27 +2,41 @@ import {EventCorrelator} from 'events';
 
 export class Plugin {
 
+  // EVENTS //
+
+  // this.featureRequest('ManifestManagerPlugin', 'agentManifests');
+  featureRequest(pluginName, ...featureNames){
+    const plugin = this.app.plugins.get(pluginName);
+    if(!plugin) throw new Error('Plugin not found')
+    for(const featureName of featureNames){
+      const feature = plugin[featureName];
+      if(!feature) throw new Error('Plugin feature not found')
+      this[featureName] = feature;
+    }
+  }
+
   eventDispatch(...argv) {
-    // console.info('eventDispatch:', this.constructor.name, ...argv,);
     this.app.emit(...argv);
   }
 
-  generateId() {
-    const randomChars = (length = 8) => Array.from({ length }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join("");
-    return `${randomChars()}-${randomChars(4)}-${randomChars(4)}-${randomChars(4)}-${randomChars(12)}`;
+  bus(eventName, eventHandler){
+    const unsubscribe = this.app.on(eventName, eventHandler);
+    this.app.garbage.add([this.pluginName, 'plug-in', `app.on(${eventName})` ], unsubscribe, `Listen to "${eventName}" on application bus`);
   }
 
-  listenTo(element, event, callback, options = false) {
-    element.addEventListener(event, callback, options);
-    const unsubscribe = () => element.removeEventListener(event, callback, options);
-    this.subscriptions.add(unsubscribe);
+  listenTo(element, eventName, eventHandler, options = false) {
+    element.addEventListener(eventName, eventHandler, options);
+    const unsubscribe = () => element.removeEventListener(eventName, eventHandler, options);
+    this.app.garbage.add([this.pluginName, 'plug-in', `element-event` ], unsubscribe, `Listen to element event "${eventName}"`);
   }
 
   tuneIn(signal, callback) {
     if (!signal) throw new Error("Signal is missing");
     const unsubscribe = signal.subscribe(callback);
-    this.subscriptions.add(unsubscribe);
+    this.app.garbage.add([this.pluginName, 'plug-in', `signal` ], unsubscribe, `Listen to signal change "${eventName}"`);
   }
+
+  // CSS
 
   linkStyleSheet(url) {
     const link = document.createElement("link");
@@ -52,11 +66,13 @@ export class Plugin {
     style.textContent = cssText;
     document.head.appendChild(style);
   }
-  registerCorrelation(name, events, map){
-    const eventCorrelator = new EventCorrelator(this.app, name, events, map);
-    const unsubscribe = eventCorrelator.start();
-    this.subscriptions.add(unsubscribe);
 
+  //
+
+  generateId() {
+    const randomChars = (length = 8) => Array.from({ length }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join("");
+    return `${randomChars()}-${randomChars(4)}-${randomChars(4)}-${randomChars(4)}-${randomChars(12)}`;
   }
+
 
 }

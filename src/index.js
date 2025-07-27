@@ -132,29 +132,27 @@ export class SubwayBuilder extends HTMLElement {
 
 function reg(app){
 
-      const instanceCorrelation = correlateEvents(app,
-      { alias:'station', name:'stationAdded', correlationField:'id' },
-      { alias:'station', name:'stationRestored', correlationField:'id' },
-      { alias:'record', name:'recordAdded', correlationField:'id' },
-      { alias:'record', name:'recordRestored', correlationField:'id' },
+    const instanceCorrelation = correlateEvents(app,
+      { alias:'station', name:'stationCreated', correlationField:'id' },
+      { alias:'record',  name:'recordCreated', correlationField:'id' },
     );
-    instanceCorrelation.subscribe(v=>console.log('HHH Correlation: Station  & Record', v))
+    // console.log('HHH Correlation Created');
+    // instanceCorrelation.subscribe(v=>console.log('HHH Correlation: Station  & Record', v))
 
-    // const classCorrelation = correlateEvents(app,
-    //   { alias:'manifest', name:'manifestAdded', correlationField:'id' },
-    //   { alias:'gadget', name:'gadgetAdded', correlationField:'id' },
-    // );
+    const classCorrelation = correlateEvents(app,
+      { alias:'manifest', name:'manifestAdded', correlationField:'id' },
+      { alias:'gadget', name:'gadgetAdded', correlationField:'id' },
+    );
     // classCorrelation.subscribe(v=>console.log('HHH B classCorrelation', v))
 
 
-    // const nodeCorrelation = correlateSignals( // node = { station, record, manifest, gadget }
-    //   { signal: instanceCorrelation, correlationField: 'station.agentType', },
-    //   { signal: classCorrelation, correlationField: 'manifest.id', },
-    // );
-
+    const nodeCorrelation = correlateSignals( // node = { station, record, manifest, gadget }
+      { signal: instanceCorrelation, correlationField: 'station.agentType', },
+      { signal: classCorrelation, correlationField: 'manifest.id', },
+    );
     // nodeCorrelation.subscribe(v=>console.log('HHH nodeCorrelation GGGGGGGGGGGGGGGGGG', v))
 
-    // nodeCorrelation.toEvent(app, 'nodeReady');
-    // app.on("nodeReady", (node) => console.log('HHHHHHHHHH', node)); // node = { station, record, manifest, gadget }
+    nodeCorrelation.toEvent(app, 'nodeReady');
+    app.on("nodeReady", (node) => console.log('nodeReady', node)); // node = { station, record, manifest, gadget }
 
 }
